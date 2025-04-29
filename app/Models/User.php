@@ -2,60 +2,56 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+// Importaciones de clases y traits necesarios.
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Relations\HasMany; // Importar HasMany
+use Illuminate\Foundation\Auth\User as Authenticatable; // Clase base para modelos autenticables.
+use Illuminate\Notifications\Notifiable; // Trait para funcionalidades de notificación.
 
+/**
+ * Modelo Eloquent que representa la tabla de usuarios.
+ * Incluye funcionalidades de autenticación de Laravel.
+ */
+// Asegúrate de que el nombre de la clase coincida con tu archivo (User o Usuario).
+// Extiende la clase base de usuario autenticable de Laravel.
 class User extends Authenticatable
 {
+    // Incluye traits para factory (creación de datos de prueba) y notificaciones.
     use HasFactory, Notifiable;
 
-    // Especificar clave primaria si la cambiaste en la migración
-    // protected $primaryKey = 'idUsuario';
-
     /**
-     * The attributes that are mass assignable.
+     * Los atributos que se pueden asignar de forma masiva.
+     * Define qué campos se pueden rellenar usando métodos como create() o update().
+     * (Asegúrate que 'name' coincida con tu columna en BD y el campo en RegisterController, podría ser 'nombre').
      *
      * @var array<int, string>
      */
     protected $fillable = [
-        'name', // Cambiado a 'name'
+        'name',
         'email',
         'password',
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
+     * Los atributos que deben ocultarse al serializar el modelo (ej., al convertir a JSON).
      *
      * @var array<int, string>
      */
     protected $hidden = [
         'password',
-        'remember_token',
+        'remember_token', // Token utilizado por la funcionalidad "Recordarme".
     ];
 
     /**
-     * Get the attributes that should be cast.
+     * Define las conversiones de tipo para los atributos del modelo.
      *
      * @return array<string, string>
      */
     protected function casts(): array
     {
+        // Define cómo deben ser tratados ciertos atributos.
         return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'email_verified_at' => 'datetime', // Convierte a objeto Carbon para manejo de fechas.
+            'password' => 'hashed', // Asegura que el atributo password se hashee automáticamente.
         ];
     }
-
-    /**
-     * Define la relación "tiene muchos" con el modelo Articulo.
-     * Un Usuario (autor) puede tener muchos Articulos.
-     */
-    // public function articulos(): HasMany
-    // {
-          // Asume que la clave foránea en 'articulos' es 'idUsuarioAutor'
-    //     return $this->hasMany(Articulo::class, 'idUsuarioAutor', 'idUsuario'); // Ajusta 'idUsuario' si usas 'id'
-    // }
 }

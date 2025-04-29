@@ -2,72 +2,73 @@
 
 namespace Database\Seeders;
 
+// Importaciones de clases necesarias.
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\File; // Para leer archivos
-use Illuminate\Support\Facades\Log;  // Para registrar errores
-use Illuminate\Support\Str;         // Para generar slugs (aunque usamos la clave directamente)
-use App\Models\Seccion;             // Importa el modelo Seccion
+use Illuminate\Support\Facades\File; // Facade para interactuar con el sistema de archivos.
+use Illuminate\Support\Facades\Log;  // Facade para registrar logs.
+use Illuminate\Support\Str;         // Helper para manipulación de strings (no se usa activamente aquí).
+use App\Models\Seccion;             // Modelo Eloquent para la tabla 'secciones'.
 
+/**
+ * Seeder para poblar la tabla 'secciones' con datos iniciales desde un archivo JSON.
+ */
 class SeccionSeeder extends Seeder
 {
     /**
-     * Ejecuta los seeds para la tabla secciones.
-     * Lee el archivo noticias.json, extrae las secciones y las guarda en la BD.
+     * Ejecuta el proceso de seeding para la tabla 'secciones'.
      */
     public function run(): void
     {
-        // Ruta al archivo JSON
+        // Define la ruta al archivo JSON fuente.
         $jsonPath = public_path('js/noticias.json');
-        $noticiasData = [];
+        $noticiasData = []; // Inicializa el array para los datos.
 
-        // Verificar si el archivo existe
+        // Verifica la existencia del archivo JSON.
         if (!File::exists($jsonPath)) {
-            Log::error("Seeder: El archivo noticias.json no se encontró en public/js/");
-            $this->command->error("El archivo noticias.json no se encontró en public/js/"); // Muestra error en consola
-            return; // Detiene la ejecución del seeder
+            Log::error("Seeder: Archivo de datos no encontrado en {$jsonPath}");
+            $this->command->error("Archivo de datos no encontrado en {$jsonPath}");
+            return; // Detiene si el archivo no existe.
         }
 
-        // Leer el contenido del archivo
+        // Lee el contenido del archivo.
         $jsonContent = File::get($jsonPath);
 
-        // Decodificar el JSON
+        // Intenta decodificar el contenido JSON.
         try {
             $noticiasData = json_decode($jsonContent, true, 512, JSON_THROW_ON_ERROR);
         } catch (\JsonException $e) {
-            Log::error("Seeder: Error al decodificar noticias.json: " . $e->getMessage());
-             $this->command->error("Error al decodificar noticias.json: " . $e->getMessage());
-            return; // Detiene la ejecución
+            // Registra y muestra error si la decodificación falla.
+            Log::error("Seeder: Error al decodificar JSON: " . $e->getMessage());
+             $this->command->error("Error al decodificar JSON: " . $e->getMessage());
+            return; // Detiene si el JSON es inválido.
         }
 
-        // Verificar que $noticiasData sea un array
+        // Verifica que los datos decodificados sean un array.
         if (!is_array($noticiasData)) {
-             Log::error("Seeder: El contenido de noticias.json no es un array válido.");
-             $this->command->error("El contenido de noticias.json no es un array válido.");
+             Log::error("Seeder: El contenido del JSON no es un array válido.");
+             $this->command->error("El contenido del JSON no es un array válido.");
              return;
         }
 
-        // Itera sobre cada elemento principal del JSON (cada sección)
-        // $slug será la clave (ej: "general", "nacional")
-        // $seccionInfo será el valor (el objeto con "title", "articles", etc.)
+        // Itera sobre cada sección encontrada en los datos JSON.
         foreach ($noticiasData as $slug => $seccionInfo) {
-            // Verifica que la sección tenga un título
+            // Procesa la sección solo si tiene un título definido en el JSON.
             if (isset($seccionInfo['title'])) {
-                // Intenta encontrar la sección por su 'slug' o créala si no existe
+                // Utiliza firstOrCreate para buscar por 'slug' y crear si no existe.
                 Seccion::firstOrCreate(
-                    ['slug' => $slug], // Busca por este campo (clave única)
-                    [
-                        'nombreSeccion' => $seccionInfo['title'], // Campo a rellenar si se crea
-                        // 'slug' ya está definido en el primer array, así que no hace falta aquí
-                    ]
+                    ['slug' => $slug], // Atributos para buscar la sección.
+                    ['nombreSeccion' => $seccionInfo['title']] // Atributos para asignar si se crea una nueva sección.
                 );
-                 $this->command->info("Sección '{$seccionInfo['title']}' ('{$slug}') procesada."); // Mensaje en consola
+                 // Informa en consola que la sección fue procesada.
+                 $this->command->info("Sección '{$seccionInfo['title']}' ('{$slug}') procesada.");
             } else {
-                 Log::warning("Seeder: La sección con slug '{$slug}' no tiene un título definido en noticias.json.");
+                 // Registra una advertencia si una sección del JSON no tiene título.
+                 Log::warning("Seeder: La sección con slug '{$slug}' no tiene título en noticias.json.");
                  $this->command->warn("Sección con slug '{$slug}' omitida por no tener título.");
             }
         }
-
-        $this->command->info('¡Seeder de Secciones completado!'); // Mensaje final en consola
+        // Informa en consola que el proceso ha finalizado.
+        $this->command->info('Seeder de Secciones completado.');
     }
 }

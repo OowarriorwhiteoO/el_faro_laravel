@@ -5,26 +5,28 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-// Importa los seeders que creaste
+// Importa las clases de los seeders específicos que se ejecutarán.
 use Database\Seeders\SeccionSeeder;
 use Database\Seeders\ArticuloSeeder;
 
+/**
+ * Seeder principal que orquesta la ejecución de otros seeders.
+ */
 class DatabaseSeeder extends Seeder
 {
     /**
-     * Ejecuta todos los seeders de la aplicación.
+     * Ejecuta los seeders definidos para poblar la base de datos.
+     * El orden de ejecución es importante si hay dependencias (ej: secciones antes que artículos).
      */
     public function run(): void
     {
-        // Llama a los seeders específicos en el orden deseado
+        // Llama al método run() de los seeders especificados en el array.
         $this->call([
-            SeccionSeeder::class, // Ejecuta primero el Seeder de Secciones
-            ArticuloSeeder::class, // Luego ejecuta el Seeder de Artículos
-            // Puedes añadir aquí otros seeders en el futuro si los necesitas
-            // Por ejemplo, para crear un usuario administrador inicial:
-            // UserSeeder::class,
+            SeccionSeeder::class, // Ejecuta el seeder para poblar la tabla 'secciones'.
+            ArticuloSeeder::class, // Ejecuta el seeder para poblar la tabla 'articulos'.
         ]);
 
-         $this->command->info('¡Todos los seeders principales han sido ejecutados!');
+        // Muestra un mensaje informativo en la consola al finalizar.
+        $this->command->info('¡Todos los seeders principales han sido ejecutados!');
     }
 }

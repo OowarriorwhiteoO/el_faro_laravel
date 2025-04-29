@@ -3,34 +3,34 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth; // Necesario para obtener el usuario autenticado
-use Illuminate\View\View; // Para el tipo de retorno
+use Illuminate\Support\Facades\Auth; // Facade para acceder a la información de autenticación.
+use Illuminate\View\View;            // Clase para retornar respuestas de vista.
+use Illuminate\Http\RedirectResponse; // Clase para respuestas de redirección.
 
 class PerfilController extends Controller
 {
     /**
      * Muestra la página del perfil del usuario autenticado.
      *
-     * @return \Illuminate\View\View
+     * @return \Illuminate\View\View|\Illuminate\Http\RedirectResponse
      */
-    public function index(): View
+    public function index(): View|RedirectResponse // Define los posibles tipos de retorno.
     {
-        // Obtiene el objeto completo del usuario que ha iniciado sesión actualmente
+        // Obtiene el modelo del usuario actualmente autenticado.
         $usuario = Auth::user();
 
-        // Si por alguna razón no se encuentra el usuario (aunque el middleware 'auth' debería prevenir esto)
+        // Verifica si se pudo obtener un usuario autenticado.
         if (!$usuario) {
-            // Redirige al login si no hay usuario autenticado (como medida de seguridad extra)
+            // Redirige a la ruta de login si no hay usuario (medida de seguridad adicional).
             return redirect()->route('login');
         }
 
-        // Pasa el objeto $usuario a la vista 'perfil.index'
-        // La vista estará en resources/views/perfil/index.blade.php
+        // Retorna la vista 'perfil.index' pasando el objeto del usuario.
         return view('perfil.index', [
             'usuario' => $usuario
         ]);
     }
 
-    // Aquí podrías añadir métodos para ACTUALIZAR el perfil en el futuro
+    // Espacio reservado para futuros métodos relacionados con el perfil, como la actualización.
     // public function update(Request $request) { ... }
 }

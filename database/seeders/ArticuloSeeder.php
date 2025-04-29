@@ -2,107 +2,111 @@
 
 namespace Database\Seeders;
 
+// Importaciones de clases necesarias.
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\File; // Para leer archivos
-use Illuminate\Support\Facades\Log;  // Para registrar errores
-use App\Models\Seccion;             // Importa el modelo Seccion
-use App\Models\Articulo;            // Importa el modelo Articulo
-use Carbon\Carbon;                  // Para manejar fechas fácilmente
+use Illuminate\Support\Facades\File; // Facade para interactuar con el sistema de archivos.
+use Illuminate\Support\Facades\Log;  // Facade para registrar logs.
+use App\Models\Seccion;             // Modelo Eloquent para la tabla 'secciones'.
+use App\Models\Articulo;            // Modelo Eloquent para la tabla 'articulos'.
+use Carbon\Carbon;                  // Clase para facilitar el manejo de fechas y horas.
 
+/**
+ * Seeder para poblar la tabla 'articulos' con datos iniciales desde un archivo JSON.
+ */
 class ArticuloSeeder extends Seeder
 {
     /**
-     * Ejecuta los seeds para la tabla articulos.
-     * Lee noticias.json, busca la sección correspondiente en la BD,
-     * e inserta o actualiza cada artículo asociándolo a su sección.
+     * Ejecuta el proceso de seeding para la tabla 'articulos'.
      */
     public function run(): void
     {
-        // Ruta al archivo JSON
+        // Define la ruta al archivo JSON que contiene los datos de las noticias.
         $jsonPath = public_path('js/noticias.json');
-        $noticiasData = [];
+        $noticiasData = []; // Inicializa el array para los datos decodificados.
 
-        // Verificar si el archivo existe
+        // Verifica si el archivo JSON existe en la ruta especificada.
         if (!File::exists($jsonPath)) {
-            Log::error("Seeder Articulos: El archivo noticias.json no se encontró en public/js/");
-            $this->command->error("El archivo noticias.json no se encontró en public/js/");
-            return;
+            Log::error("Seeder Articulos: Archivo de datos no encontrado en {$jsonPath}");
+            $this->command->error("Archivo de datos no encontrado en {$jsonPath}");
+            return; // Detiene la ejecución si el archivo no existe.
         }
 
-        // Leer el contenido del archivo
+        // Lee el contenido completo del archivo JSON.
         $jsonContent = File::get($jsonPath);
 
-        // Decodificar el JSON
+        // Intenta decodificar el contenido JSON a un array asociativo de PHP.
         try {
             $noticiasData = json_decode($jsonContent, true, 512, JSON_THROW_ON_ERROR);
         } catch (\JsonException $e) {
-            Log::error("Seeder Articulos: Error al decodificar noticias.json: " . $e->getMessage());
-            $this->command->error("Error al decodificar noticias.json: " . $e->getMessage());
+            // Registra un error y detiene la ejecución si el JSON es inválido.
+            Log::error("Seeder Articulos: Error al decodificar JSON: " . $e->getMessage());
+            $this->command->error("Error al decodificar JSON: " . $e->getMessage());
             return;
         }
 
-        // Verificar que $noticiasData sea un array
+        // Verifica que los datos decodificados formen un array válido.
         if (!is_array($noticiasData)) {
-             Log::error("Seeder Articulos: El contenido de noticias.json no es un array válido.");
-             $this->command->error("El contenido de noticias.json no es un array válido.");
+             Log::error("Seeder Articulos: El contenido del JSON no es un array válido.");
+             $this->command->error("El contenido del JSON no es un array válido.");
              return;
         }
 
-        // Itera sobre cada sección principal del JSON
+        // Itera sobre cada sección definida en el array de datos.
         foreach ($noticiasData as $slugSeccion => $seccionInfo) {
-            // Busca la sección en la base de datos usando el slug
+            // Busca la sección correspondiente en la base de datos usando su 'slug'.
             $seccionDB = Seccion::where('slug', $slugSeccion)->first();
 
-            // Si no se encuentra la sección en la BD, muestra un aviso y continúa con la siguiente
+            // Si la sección no existe en la base de datos, omite sus artículos.
             if (!$seccionDB) {
-                Log::warning("Seeder Articulos: No se encontró la sección con slug '{$slugSeccion}' en la base de datos. Omitiendo sus artículos.");
-                $this->command->warn("No se encontró la sección con slug '{$slugSeccion}' en la BD. Omitiendo artículos.");
-                continue; // Pasa a la siguiente sección del JSON
+                Log::warning("Seeder Articulos: Sección '{$slugSeccion}' no encontrada en BD. Omitiendo artículos.");
+                $this->command->warn("Sección '{$slugSeccion}' no encontrada en BD. Omitiendo artículos.");
+                continue; // Continúa con la siguiente sección.
             }
 
-            // Verifica si la sección actual en el JSON tiene artículos y si es un array
+            // Verifica que la información de la sección contenga una clave 'articles' y que sea un array.
             if (!isset($seccionInfo['articles']) || !is_array($seccionInfo['articles'])) {
-                Log::warning("Seeder Articulos: No se encontraron artículos o no es un array para la sección '{$slugSeccion}'.");
-                 $this->command->warn("No se encontraron artículos para la sección '{$slugSeccion}'.");
-                continue;
+                Log::warning("Seeder Articulos: No hay array 'articles' para la sección '{$slugSeccion}'.");
+                 $this->command->warn("No hay array 'articles' para la sección '{$slugSeccion}'.");
+                continue; // Continúa con la siguiente sección.
             }
 
-            // Itera sobre cada artículo dentro de la sección actual del JSON
+            // Itera sobre cada artículo dentro de la sección actual.
             foreach ($seccionInfo['articles'] as $articuloJson) {
-                // Intenta convertir la fecha del JSON a un formato YYYY-MM-DD
+                // Intenta procesar la fecha del artículo desde el JSON.
                 $fechaPublicacion = null;
                 if (!empty($articuloJson['date'])) {
                     try {
+                        // Convierte la fecha a formato YYYY-MM-DD usando Carbon.
                         $fechaPublicacion = Carbon::parse($articuloJson['date'])->format('Y-m-d');
                     } catch (\Exception $e) {
+                        // Registra un error si la fecha es inválida.
                         Log::error("Seeder Articulos: Fecha inválida '{$articuloJson['date']}' para artículo '{$articuloJson['title']}'. Se guardará como NULL.");
-                        // $fechaPublicacion se mantiene como null
                     }
                 }
 
-                // Usa updateOrCreate para evitar duplicados si se ejecuta el seeder varias veces.
-                // Buscará un artículo con el mismo título Y la misma idSeccion.
-                // Si lo encuentra, lo actualizará; si no, lo creará.
+                // Utiliza updateOrCreate para insertar o actualizar el artículo.
+                // Busca por título y idSeccion para evitar duplicados exactos.
                 Articulo::updateOrCreate(
                     [
-                        'titulo' => $articuloJson['title'], // Criterio de búsqueda
-                        'idSeccion' => $seccionDB->idSeccion // Criterio de búsqueda
+                        'titulo' => $articuloJson['title'],      // Criterio de búsqueda: título.
+                        'idSeccion' => $seccionDB->idSeccion   // Criterio de búsqueda: ID de sección.
                     ],
-                    [ // Datos para crear o actualizar
+                    [ // Datos a insertar o actualizar.
                         'descripcion' => $articuloJson['description'] ?? null,
-                        'contenido' => $articuloJson['details'] ?? null, // Usamos 'details' del JSON para 'contenido'
+                        'contenido' => $articuloJson['details'] ?? null, // Mapea 'details' del JSON a 'contenido'.
                         'imagenUrl' => $articuloJson['img'] ?? null,
-                        'imagenAlt' => $articuloJson['alt-img'] ?? $articuloJson['title'], // Usa alt-img o el título como fallback
+                        'imagenAlt' => $articuloJson['alt-img'] ?? $articuloJson['title'], // Texto alternativo.
                         'categoria' => $articuloJson['category'] ?? null,
-                        'fechaPublicacion' => $fechaPublicacion,
-                        // 'idSeccion' ya está en los criterios de búsqueda/creación
+                        'fechaPublicacion' => $fechaPublicacion, // Fecha procesada o null.
                     ]
                 );
             }
+             // Informa en consola que los artículos de esta sección fueron procesados.
              $this->command->info("Artículos para la sección '{$seccionDB->nombreSeccion}' procesados.");
         }
 
+         // Informa en consola que el seeder de artículos ha finalizado.
          $this->command->info('¡Seeder de Artículos completado!');
     }
 }

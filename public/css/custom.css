@@ -1,81 +1,71 @@
-
 /* --- Efecto Hover para Tarjetas/Artículos de Noticias --- */
 
-/* Clase base para la tarjeta/artículo de noticia */
+/* Clase base para la transición y cursor en tarjetas de noticias */
 .news-card {
     transition: all 0.3s ease-in-out; /* Transición suave para todos los cambios */
-    cursor: pointer; /* Cambia el cursor para indicar que es interactivo */
+    cursor: pointer; /* Cursor interactivo */
 }
 
-/* Estilos al pasar el cursor sobre la tarjeta/artículo */
+/* Estilos aplicados al pasar el cursor sobre la tarjeta */
 .news-card:hover {
-    background-color: #212529 !important; /* Fondo oscuro (Bootstrap dark color) */
-    color: #f8f9fa !important;           /* Texto claro (Bootstrap light color) */
-    transform: translateY(-6px);         /* Efecto de elevación un poco más pronunciado */
-    box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.2) !important; /* Sombra más notoria */
+    background-color: #212529 !important; /* Fondo oscuro (Bootstrap dark) */
+    color: #f8f9fa !important;           /* Texto claro (Bootstrap light) */
+    transform: translateY(-6px);         /* Efecto de elevación */
+    box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.2) !important; /* Sombra más pronunciada */
 }
 
-/* Ajustar colores de elementos internos específicos en hover */
-.news-card:hover .card-title, /* Título de la tarjeta */
-.news-card:hover .card-text, /* Texto de la tarjeta */
-.news-card:hover h2,        /* Título del artículo (en páginas de sección) */
-.news-card:hover p,         /* Párrafos del artículo (en páginas de sección) */
-.news-card:hover .small,    /* Texto small si existe */
-.news-card:hover .lead {    /* Texto lead si existe */
-    color: #f8f9fa !important; /* Mismo color claro */
+/* Ajuste de color de texto para elementos internos en estado hover */
+.news-card:hover .card-title,
+.news-card:hover .card-text,
+.news-card:hover h2,
+.news-card:hover p,
+.news-card:hover .small,
+.news-card:hover .lead {
+    color: #f8f9fa !important; /* Texto claro */
 }
 
-/* Ajustar colores de badges en hover */
+/* Ajuste de estilo para badges dentro de la tarjeta en estado hover */
 .news-card:hover .badge {
     background-color: #f8f9fa !important; /* Fondo claro */
     color: #212529 !important;           /* Texto oscuro */
     border: 1px solid #dee2e6;         /* Borde sutil */
 }
 
-/* Ajustar botón dentro de la tarjeta en hover */
-.news-card:hover .btn-outline-primary { /* botón outline */
+/* Ajuste de estilo para botones outline-primary dentro de la tarjeta en estado hover */
+.news-card:hover .btn-outline-primary {
     background-color: #f8f9fa;          /* Fondo claro */
-    color: #0d6efd;                     /* Color primario de Bootstrap para el texto */
+    color: #0d6efd;                     /* Texto primario Bootstrap */
     border-color: #f8f9fa;              /* Borde claro */
 }
-.news-card:hover .btn-primary { /* Específico para botón primary */
+
+/* Ajuste de estilo para botones primary dentro de la tarjeta en estado hover */
+.news-card:hover .btn-primary {
     background-color: #f8f9fa;
     color: #0d6efd;
     border-color: #f8f9fa;
 }
 
-
-/* Asegurar que la imagen no se vea afectada directamente por el color de texto */
+/* Ajuste de opacidad para la imagen dentro de la tarjeta en estado hover */
 .news-card:hover img {
-    opacity: 0.95; /* Levemente opaca para integrar mejor */
+    opacity: 0.95; /* Leve opacidad */
 }
 
+/* Elimina el subrayado de enlaces dentro de la tarjeta en estado hover */
 .news-card:hover a {
     text-decoration: none;
 }
 
 /* === Estilos Hover para el Menú de Navegación Principal === */
 
-/* Estilos base para la transición suave */
+/* Estilos base para transición, bordes y margen en enlaces de navegación */
 .navbar-nav .nav-link {
     transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
-    border-radius: 0.25rem; /* Opcional: bordes redondeados suaves */
-    margin: 0 0.25rem; /* Opcional: pequeño espacio entre enlaces */
+    border-radius: 0.25rem;
+    margin: 0 0.25rem;
 }
 
-/* Estilos al pasar el mouse sobre un enlace del menú (que NO esté activo) */
+/* Estilos aplicados al pasar el mouse sobre enlaces de navegación no activos */
 .navbar-nav .nav-link:not(.active):hover {
-    background-color: #8387c2b0; /* Un gris claro de fondo (Bootstrap light color) */
-    color: #0d6efd; /* Color primario de Bootstrap para el texto */
+    background-color: #8387c2b0; /* Fondo color personalizado */
+    color: #0d6efd; /* Texto primario Bootstrap */
 }
-
-/* Opcional: Estilos para el enlace activo (puedes ajustarlo si Bootstrap no lo hace como quieres) */
-/* .navbar-nav .nav-link.active { */
-    /* background-color: #0d6efd; */ /* Color primario de Bootstrap */
-    /* color: white; */
-/* } */
-
-/* Asegurarse que el hover no afecte al dropdown-toggle de la misma forma si no se desea */
-/* .navbar-nav .nav-link.dropdown-toggle:not(.active):hover {
-    background-color: transparent; /* O quitarle el fondo en hover */
-/* } */

@@ -1,31 +1,29 @@
-@extends('layouts.layout') {{-- Hereda de la plantilla base --}}
+@extends('layouts.layout') {{-- Hereda la estructura del layout principal --}}
 
-@section('title', 'Iniciar Sesión') {{-- Título de la página --}}
+@section('title', 'Iniciar Sesión') {{-- Define el título de la pestaña del navegador --}}
 
 @section('content')
     <div class="container mt-4 mb-5">
         <div class="row justify-content-center">
             <div class="col-md-8 col-lg-6">
                 <div class="card shadow-sm">
-                    <div class="card-header bg-secondary text-white"> {{-- Color diferente para distinguir de registro --}}
+                    <div class="card-header bg-secondary text-white">
                         <h4 class="mb-0">Iniciar Sesión</h4>
                     </div>
                     <div class="card-body">
 
-                        {{-- Formulario de Login --}}
-                        {{-- Envía los datos por POST a la ruta nombrada 'login.attempt' --}}
+                        {{-- Formulario para el inicio de sesión --}}
                         <form method="POST" action="{{ route('login.attempt') }}">
-                            @csrf {{-- Token CSRF obligatorio --}}
+                            @csrf {{-- Incluye el token CSRF para protección --}}
 
-                            {{-- Campo Email --}}
+                            {{-- Campo para el Correo Electrónico --}}
                             <div class="mb-3">
                                 <label for="email" class="form-label">Correo Electrónico</label>
-                                {{-- name="email" --}}
-                                {{-- old('email') recupera el email si la validación falla --}}
+                                {{-- Muestra el valor anterior del email si la validación falla --}}
                                 <input id="email" type="email"
                                     class="form-control @error('email') is-invalid @enderror" name="email"
                                     value="{{ old('email') }}" required autocomplete="email" autofocus>
-                                {{-- Muestra el error si falla la validación para 'email' (incluye el error de credenciales incorrectas) --}}
+                                {{-- Muestra mensajes de error de validación para el campo email --}}
                                 @error('email')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -33,13 +31,13 @@
                                 @enderror
                             </div>
 
-                            {{-- Campo Contraseña --}}
+                            {{-- Campo para la Contraseña --}}
                             <div class="mb-3">
                                 <label for="password" class="form-label">Contraseña</label>
                                 <input id="password" type="password"
                                     class="form-control @error('password') is-invalid @enderror" name="password" required
                                     autocomplete="current-password">
-                                {{-- Muestra error si falla la validación para 'password' (normalmente solo si está vacío) --}}
+                                {{-- Muestra mensajes de error de validación para el campo password --}}
                                 @error('password')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -47,9 +45,9 @@
                                 @enderror
                             </div>
 
-                            {{-- Checkbox "Recordarme" (Opcional) --}}
+                            {{-- Checkbox opcional para "Recordarme" --}}
                             <div class="mb-3 form-check">
-                                {{-- name="remember" es usado por Auth::attempt() --}}
+                                {{-- El atributo 'checked' se añade si el valor 'remember' existía previamente --}}
                                 <input class="form-check-input" type="checkbox" name="remember" id="remember"
                                     {{ old('remember') ? 'checked' : '' }}>
                                 <label class="form-check-label" for="remember">
@@ -57,34 +55,26 @@
                                 </label>
                             </div>
 
-                            {{-- Botón de Envío --}}
+                            {{-- Botón para enviar el formulario --}}
                             <div class="d-grid">
-                                <button type="submit" class="btn btn-secondary"> {{-- Botón con color secundario --}}
+                                <button type="submit" class="btn btn-secondary">
                                     Iniciar Sesión
                                 </button>
                             </div>
 
-                            {{-- Enlaces Adicionales (Opcional) --}}
+                            {{-- Enlace opcional al formulario de registro --}}
                             <div class="text-center mt-3">
-                                {{-- Enlace a Registro --}}
                                 @if (Route::has('register.form'))
                                     <a class="btn btn-link btn-sm" href="{{ route('register.form') }}">
                                         ¿No tienes cuenta? Regístrate
                                     </a>
                                 @endif
-                                {{-- Enlace a Recuperar Contraseña (si se implementa) --}}
-                                {{-- @if (Route::has('password.request'))
-                                <br>
-                                <a class="btn btn-link btn-sm" href="{{ route('password.request') }}">
-                                    ¿Olvidaste tu contraseña?
-                                </a>
-                            @endif --}}
                             </div>
 
-                        </form> {{-- Fin del formulario --}}
-                    </div> {{-- Fin card-body --}}
-                </div> {{-- Fin card --}}
-            </div> {{-- Fin col --}}
-        </div> {{-- Fin row --}}
-    </div> {{-- Fin container --}}
+                        </form> {{-- Fin del formulario de login --}}
+                    </div> {{-- Fin del card-body --}}
+                </div> {{-- Fin del card --}}
+            </div> {{-- Fin de la columna --}}
+        </div> {{-- Fin de la fila --}}
+    </div> {{-- Fin del contenedor --}}
 @endsection

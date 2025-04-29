@@ -2,43 +2,46 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Usuario; // <-- Importa tu modelo Usuario
+// Importaciones de clases necesarias.
+use App\Models\Usuario;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash; // Para hashear la contraseña
-use Illuminate\Support\Facades\Auth; // Para iniciar sesión automáticamente (opcional)
-use Illuminate\Support\Facades\Validator; // Para validar (alternativa a Request validation)
-use Illuminate\Support\Facades\Log; // Para registrar errores
-use Illuminate\Auth\Events\Registered; // Para eventos (opcional)
+use Illuminate\Support\Facades\Hash;     // Facade para hashing de contraseñas.
+use Illuminate\Support\Facades\Auth;      // Facade para autenticación.
+use Illuminate\Support\Facades\Validator; // Facade para validación de datos.
+use Illuminate\Support\Facades\Log;       // Facade para registro de logs.
+use Illuminate\Auth\Events\Registered;    // Evento disparado tras registro exitoso.
+use Illuminate\Contracts\View\View;       // Interfaz para respuestas de vista.
+use Illuminate\Http\RedirectResponse;   // Clase para respuestas de redirección.
 
 class RegisterController extends Controller
 {
     /**
-     * Muestra el formulario de registro.
+     * Muestra el formulario de registro de usuarios.
      *
      * @return \Illuminate\Contracts\View\View
      */
-    public function showRegistrationForm()
+    public function showRegistrationForm(): View
     {
-        // Retorna la vista que crearemos en el siguiente paso
-        return view('auth.register'); // Asume que la vista estará en resources/views/auth/register.blade.php
+        // Retorna la vista Blade ubicada en 'resources/views/auth/register.blade.php'.
+        return view('auth.register');
     }
 
     /**
-     * Maneja la petición de registro POST.
-     * Valida los datos, crea un nuevo usuario, (opcionalmente) inicia sesión, y redirige.
+     * Procesa la solicitud POST para registrar un nuevo usuario.
+     * Valida los datos, crea el usuario, inicia sesión y redirige.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function register(Request $request)
+    public function register(Request $request): RedirectResponse
     {
-        // 1. Validación de los datos de entrada
+        // Define las reglas de validación para los datos del formulario.
         $validator = Validator::make($request->all(), [
-            'nombre' => ['required', 'string', 'max:255'], // Cambiado 'name' a 'nombre' para coincidir con tu tabla/modelo
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:usuarios,email'], // Valida unicidad en la tabla 'usuarios', columna 'email'
-            'password' => ['required', 'string', 'min:8', 'confirmed'], // 'confirmed' busca un campo llamado 'password_confirmation'
+            'nombre' => ['required', 'string', 'max:255'], // Campo 'nombre' requerido.
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:usuarios,email'], // Email requerido, formato válido y único en tabla 'usuarios'.
+            'password' => ['required', 'string', 'min:8', 'confirmed'], // Contraseña requerida, mínimo 8 caracteres y confirmada.
         ], [
-            // Mensajes personalizados
+            // Mensajes personalizados para errores de validación.
             'nombre.required' => 'El nombre es obligatorio.',
             'email.required' => 'El correo electrónico es obligatorio.',
             'email.email' => 'El formato del correo no es válido.',
@@ -48,39 +51,41 @@ class RegisterController extends Controller
             'password.confirmed' => 'La confirmación de contraseña no coincide.',
         ]);
 
-        // Si la validación falla, redirige de vuelta con errores y old input
+        // Redirige de vuelta al formulario si la validación falla.
         if ($validator->fails()) {
             return redirect()->route('register.form')
-                        ->withErrors($validator)
-                        ->withInput();
+                        ->withErrors($validator) // Pasa los errores a la sesión.
+                        ->withInput(); // Mantiene los datos ingresados (excepto contraseña).
         }
 
-        // 2. Crear el usuario en la base de datos
+        // Intenta crear el usuario si la validación es exitosa.
         try {
-            $validatedData = $validator->validated(); // Obtiene los datos validados
+            // Obtiene los datos que pasaron la validación.
+            $validatedData = $validator->validated();
 
+            // Crea el nuevo usuario en la base de datos usando el modelo Usuario.
             $usuario = Usuario::create([
                 'nombre' => $validatedData['nombre'],
                 'email' => $validatedData['email'],
-                'password' => Hash::make($validatedData['password']), // ¡Importante! Hashear la contraseña
+                'password' => Hash::make($validatedData['password']), // Hashea la contraseña antes de guardarla.
             ]);
 
-            // (Opcional) Disparar evento de usuario registrado (para enviar email de verificación, etc.)
+            // Dispara el evento 'Registered' (útil para acciones posteriores como enviar emails).
             // event(new Registered($usuario));
 
-            // (Opcional) Iniciar sesión automáticamente para el usuario recién registrado
+            // Inicia sesión automáticamente para el usuario recién registrado.
             Auth::login($usuario);
 
-            // 3. Redirigir al usuario (ej: a la página de inicio) con un mensaje de éxito
+            // Redirige a la página de inicio con un mensaje de éxito en la sesión flash.
             return redirect()->route('home')->with('success', '¡Registro completado! Has iniciado sesión.');
 
         } catch (\Exception $e) {
-            // Si algo falla durante la creación (ej: problema de BD)
+            // Registra el error si la creación del usuario falla.
             Log::error("Error durante el registro: " . $e->getMessage());
-            // Redirige de vuelta con un mensaje de error general
+            // Redirige de vuelta al formulario con un mensaje de error general.
             return redirect()->route('register.form')
                         ->with('error', 'Ocurrió un error durante el registro. Por favor, inténtalo de nuevo.')
-                        ->withInput(); // Mantiene los datos (excepto contraseña)
+                        ->withInput();
         }
     }
 }

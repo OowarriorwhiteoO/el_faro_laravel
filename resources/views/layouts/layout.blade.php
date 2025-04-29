@@ -94,7 +94,7 @@
                                     {{ Auth::user()->nombre }}
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                    {{-- <<< ENLACE AÑADIDO/CORREGIDO >>> --}}
+                                    {{-- <<< ENLACE >>> --}}
                                     <a class="dropdown-item" href="{{ route('perfil.index') }}">
                                         Mi Perfil
                                     </a>
@@ -142,7 +142,7 @@
 
     {{-- ===================== PIE DE PÁGINA ===================== --}}
     <footer id="footer" class="bg-dark text-white py-5 mt-5">
-        {{-- ... (Contenido del Footer sin cambios) ... --}}
+        {{-- ... (Contenido del Footer) ... --}}
         <div class="container">
             <div class="row">
                 <div class="col-md-3 mb-4"> <a href="{{ route('home') }}"> <img

@@ -3,56 +3,54 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Seccion; // <-- Importa el modelo Seccion
-use Illuminate\Support\Facades\Log; // Para registrar errores si algo falla
+use App\Models\Seccion;              // Modelo para interactuar con la tabla 'secciones'.
+use Illuminate\Support\Facades\Log;  // Facade para registrar logs.
+use Illuminate\Contracts\View\View;  // Interfaz para respuestas de vista.
+use Illuminate\Http\RedirectResponse; // Clase para respuestas de redirección.
+use Illuminate\Database\Eloquent\ModelNotFoundException; // Excepción específica para firstOrFail.
 
 class SeccionController extends Controller
 {
     /**
-     * Muestra la página de una sección de noticias específica.
-     * Carga la sección y TODOS sus artículos desde la base de datos usando el slug.
+     * Muestra la página de una sección específica con sus artículos.
+     * Carga la sección y sus artículos asociados desde la base de datos.
      *
-     * @param string $slug El identificador de la sección (ej: 'nacional', 'deportes')
-     * @return \Illuminate\Contracts\View\View
+     * @param string $slug Identificador único de la sección en la URL.
+     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      */
-    public function mostrar($slug)
+    public function mostrar(string $slug): View|RedirectResponse // Define los posibles tipos de retorno.
     {
         try {
-            // Busca la sección por su 'slug' en la base de datos.
-            // Carga previamente ('with') todos los artículos relacionados ('articulos')
-            // ordenándolos por fecha de publicación descendente.
-            // firstOrFail() encontrará la primera sección que coincida o lanzará un error 404 si no existe.
+            // Busca la sección por su 'slug', cargando previamente los artículos relacionados.
+            // Los artículos se ordenan por fecha de publicación descendente.
+            // firstOrFail lanza una excepción ModelNotFoundException si no encuentra la sección.
             $seccion = Seccion::where('slug', $slug)
                               ->with(['articulos' => function($query) {
                                   $query->orderBy('fechaPublicacion', 'desc');
                               }])
-                              ->firstOrFail(); // Lanza 404 si no encuentra la sección
+                              ->firstOrFail();
 
-            // Accede a los artículos ya cargados a través de la relación definida en el modelo Seccion
+            // Obtiene la colección de artículos cargados a través de la relación.
             $articulos = $seccion->articulos;
 
-            // Retorna la vista 'seccion.mostrar' (resources/views/seccion/mostrar.blade.php)
-            // Pasa el objeto $seccion completo (que incluye el nombre y slug) y la colección de $articulos.
+            // Retorna la vista 'seccion.mostrar', pasando los datos de la sección y sus artículos.
             return view('seccion.mostrar', [
-                'tituloSeccion' => $seccion->nombreSeccion, // Obtiene el nombre desde el objeto $seccion
+                'tituloSeccion' => $seccion->nombreSeccion,
                 'articulos' => $articulos,
-                'slugSeccion' => $seccion->slug // Pasa el slug también (útil para IDs en la vista)
+                'slugSeccion' => $seccion->slug
             ]);
 
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-             // Esto ya no es estrictamente necesario porque firstOrFail() maneja el 404,
-             // pero lo dejamos por si quieres un log específico o manejo diferente.
+        } catch (ModelNotFoundException $e) {
+            // Maneja el caso específico en que la sección no se encuentra.
             Log::warning("Sección no encontrada con slug: {$slug}");
-            abort(404, 'Sección no encontrada'); // Muestra la página 404 estándar
+            // Muestra la página de error 404 estándar de Laravel.
+            abort(404, 'Sección no encontrada');
 
         } catch (\Exception $e) {
-            // Captura cualquier otro error de base de datos o inesperado
+            // Captura cualquier otro error inesperado durante la consulta o procesamiento.
             Log::error("Error al cargar la sección '{$slug}': " . $e->getMessage());
-            // Puedes mostrar una vista de error personalizada o redirigir con un mensaje
-            // session()->flash('error', 'Ocurrió un error al cargar la sección.');
+            // Redirige a la página de inicio con un mensaje de error general.
             return redirect()->route('home')->with('error', 'Ocurrió un error al cargar la sección.');
         }
     }
-
-     // Ya no necesitamos el método cargarNoticiasDesdeJson()
 }

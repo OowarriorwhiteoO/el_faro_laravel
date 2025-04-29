@@ -2,76 +2,68 @@
 
 namespace App\Models;
 
-// Importaciones necesarias para la autenticación y funcionalidades Eloquent
+// Importaciones de clases y traits necesarios.
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable; // Importante: Extender esta clase
-use Illuminate\Notifications\Notifiable;
-// Si planeas añadir relaciones (ej: artículos escritos por el usuario), impórtalas aquí
-// use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Foundation\Auth\User as Authenticatable; // Clase base para modelos autenticables.
+use Illuminate\Notifications\Notifiable; // Trait para funcionalidades de notificación.
 
-// La clase Usuario debe extender Authenticatable para funcionar con Auth::login()
+/**
+ * Modelo Eloquent que representa la tabla 'usuarios'.
+ * Incluye funcionalidades de autenticación de Laravel.
+ */
+// La clase Usuario extiende la clase base de usuario autenticable de Laravel.
 class Usuario extends Authenticatable
 {
-    // Traits estándar de Laravel para funcionalidades útiles
+    // Incluye traits para factory (creación de datos de prueba) y notificaciones.
     use HasFactory, Notifiable;
 
     /**
      * El nombre de la tabla asociada con el modelo.
-     * Especificamos 'usuarios' porque no es el plural por defecto de 'Usuario' ('usuarios' vs 'usuario').
-     * Laravel lo adivinaría correctamente en español, pero es bueno ser explícito.
+     *
      * @var string
      */
-    protected $table = 'usuarios';
+    protected $table = 'usuarios'; // Especifica el nombre de la tabla en la base de datos.
 
     /**
      * La clave primaria asociada con la tabla.
-     * Especificamos 'idUsuario' porque no es 'id'.
+     *
      * @var string
      */
-    protected $primaryKey = 'idUsuario';
+    protected $primaryKey = 'idUsuario'; // Define 'idUsuario' como la clave primaria.
 
     /**
-     * Los atributos que se pueden asignar masivamente.
-     * Es crucial definir esto para que Usuario::create() funcione en el RegisterController.
+     * Los atributos que se pueden asignar de forma masiva.
+     * Define qué campos se pueden rellenar usando métodos como create() o update().
+     *
      * @var array<int, string>
      */
     protected $fillable = [
-        'nombre', // Corresponde al campo 'nombre' del formulario/tabla
+        'nombre', // Campo para el nombre del usuario.
         'email',
         'password',
     ];
 
     /**
-     * Los atributos que deben ocultarse en las serializaciones (ej: al convertir a JSON).
-     * Importante para no exponer la contraseña.
+     * Los atributos que deben ocultarse al serializar el modelo (ej., al convertir a JSON).
+     *
      * @var array<int, string>
      */
     protected $hidden = [
         'password',
-        'remember_token', // Campo usado por la función "Recordarme" de Laravel
+        'remember_token', // Token utilizado por la funcionalidad "Recordarme".
     ];
 
     /**
-     * Los atributos que deben ser casteados a tipos nativos.
+     * Define las conversiones de tipo para los atributos del modelo.
      *
      * @return array<string, string>
      */
     protected function casts(): array
     {
+        // Define cómo deben ser tratados ciertos atributos.
         return [
-            'email_verified_at' => 'datetime', // Campo para verificación de email
-            'password' => 'hashed', // Asegura que la contraseña siempre se hashee al asignarla (buena práctica)
+            'email_verified_at' => 'datetime', // Convierte a objeto Carbon para manejo de fechas.
+            'password' => 'hashed', // Asegura que el atributo password se hashee automáticamente.
         ];
     }
-
-     /**
-      * Opcional: Define la relación "tiene muchos" con el modelo Articulo.
-      * Un Usuario (autor) puede tener muchos Articulos.
-      */
-     // public function articulos(): HasMany
-     // {
-           // Asume que la clave foránea en 'articulos' es 'idUsuarioAutor'
-           // y la clave primaria en 'usuarios' es 'idUsuario'
-     //     return $this->hasMany(Articulo::class, 'idUsuarioAutor', 'idUsuario');
-     // }
 }

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\View\View; // Importa la clase View
+use Illuminate\View\View; // Clase para retornar respuestas de vista.
 
 class PaginaEstaticaController extends Controller
 {
@@ -14,7 +14,7 @@ class PaginaEstaticaController extends Controller
      */
     public function privacidad(): View
     {
-        // Retorna la vista ubicada en resources/views/paginas/privacidad.blade.php
+        // Retorna la vista Blade correspondiente a la política de privacidad.
         return view('paginas.privacidad');
     }
 
@@ -25,7 +25,7 @@ class PaginaEstaticaController extends Controller
      */
     public function terminos(): View
     {
-        // Retorna la vista ubicada en resources/views/paginas/terminos.blade.php
+        // Retorna la vista Blade correspondiente a los términos de uso.
         return view('paginas.terminos');
     }
 
@@ -36,7 +36,7 @@ class PaginaEstaticaController extends Controller
      */
     public function cookies(): View
     {
-        // Retorna la vista ubicada en resources/views/paginas/cookies.blade.php
+        // Retorna la vista Blade correspondiente a la política de cookies.
         return view('paginas.cookies');
     }
 }

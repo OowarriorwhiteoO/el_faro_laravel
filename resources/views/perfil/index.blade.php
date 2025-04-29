@@ -6,7 +6,7 @@
     <div class="container mt-4 mb-5">
         <div class="row justify-content-center">
             <div class="col-md-8">
-                {{-- Usamos @auth para asegurar (aunque la ruta ya está protegida) --}}
+                {{-- Usamos @auth para asegurar --}}
                 @auth
                     <div class="card shadow-sm">
                         <div class="card-header bg-info text-white">
@@ -31,12 +31,6 @@
                                     {{-- Muestra hace cuánto tiempo --}}
                                 </li>
                             </ul>
-
-                            {{-- Aquí podrías añadir botones/formularios para editar perfil o cambiar contraseña en el futuro --}}
-                            {{-- <div class="mt-4">
-                            <a href="#" class="btn btn-sm btn-outline-primary">Editar Perfil</a>
-                            <a href="#" class="btn btn-sm btn-outline-secondary">Cambiar Contraseña</a>
-                        </div> --}}
 
                         </div>
                     </div>

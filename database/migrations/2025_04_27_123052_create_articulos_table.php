@@ -7,43 +7,48 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Ejecuta las migraciones.
-     * Crea la tabla 'articulos'.
+     * Ejecuta las migraciones para crear la tabla 'articulos'.
      */
     public function up(): void
     {
+        // Define la estructura de la tabla 'articulos'.
         Schema::create('articulos', function (Blueprint $table) {
-            $table->id('idArticulo'); // Columna ID autoincremental, clave primaria
-            $table->string('titulo'); // Título del artículo
-            $table->text('descripcion')->nullable(); // Descripción corta (TEXT permite más caracteres)
-            $table->longText('contenido')->nullable(); // Contenido completo del artículo (LONGTEXT)
-            $table->string('imagenUrl')->nullable(); // Nombre del archivo de imagen (o URL completa)
-            $table->string('imagenAlt')->nullable(); // Texto alternativo para la imagen
-            $table->string('categoria')->nullable(); // Categoría específica dentro de la sección
-            $table->date('fechaPublicacion')->nullable(); // Fecha de publicación (solo fecha)
+            // Define la clave primaria autoincremental 'idArticulo'.
+            $table->id('idArticulo');
+            // Define la columna para el título del artículo.
+            $table->string('titulo');
+            // Define la columna para la descripción corta (permite nulos).
+            $table->text('descripcion')->nullable();
+            // Define la columna para el contenido completo (permite nulos y texto largo).
+            $table->longText('contenido')->nullable();
+            // Define la columna para la URL o nombre de archivo de la imagen (permite nulos).
+            $table->string('imagenUrl')->nullable();
+            // Define la columna para el texto alternativo de la imagen (permite nulos).
+            $table->string('imagenAlt')->nullable();
+            // Define la columna para la categoría específica (permite nulos).
+            $table->string('categoria')->nullable();
+            // Define la columna para la fecha de publicación (permite nulos).
+            $table->date('fechaPublicacion')->nullable();
 
-            // Clave foránea para la relación con la tabla 'secciones'
-            $table->unsignedBigInteger('idSeccion'); // Debe ser del mismo tipo que idSeccion en 'secciones'
+            // Define la columna para la clave foránea 'idSeccion'.
+            $table->unsignedBigInteger('idSeccion');
+            // Establece la restricción de clave foránea hacia la tabla 'secciones'.
             $table->foreign('idSeccion')
                   ->references('idSeccion')->on('secciones')
-                  ->onDelete('cascade'); // Opcional: si se borra una sección, se borran sus artículos
+                  // Define que si se elimina una sección, sus artículos asociados también se eliminarán.
+                  ->onDelete('cascade');
 
-            // Clave foránea para el autor (relación con usuarios - opcional por ahora)
-            // $table->unsignedBigInteger('idUsuarioAutor')->nullable();
-            // $table->foreign('idUsuarioAutor')
-            //       ->references('idUsuario')->on('usuarios')
-            //       ->onDelete('set null'); // Opcional: si se borra el autor, el artículo queda sin autor
-
-            $table->timestamps(); // Columnas created_at y updated_at
+            // Define las columnas estándar 'created_at' y 'updated_at'.
+            $table->timestamps();
         });
     }
 
     /**
-     * Revierte las migraciones.
-     * Elimina la tabla 'articulos'.
+     * Revierte las migraciones, eliminando la tabla 'articulos'.
      */
     public function down(): void
     {
+        // Elimina la tabla 'articulos' si existe.
         Schema::dropIfExists('articulos');
     }
 };
