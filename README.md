@@ -68,10 +68,4 @@ Este faro ahora ilumina con:
     ```
 8.  **¡Navega!** Abre tu navegador y visita `http://127.0.0.1:8000` (o la URL que te dé el comando anterior).
 
-## 💡 Conclusión
 
-Este proyecto fue una gran aventura en el mundo de Laravel y el desarrollo web backend. Se lograron implementar todas las funcionalidades requeridas, transformando "El Faro" en una aplicación dinámica y preparada para el futuro.
-
----
-
-*Desarrollado por [Tu Nombre / Nombres del Grupo] para AIEP.*
