@@ -1,61 +1,71 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 📰 El Faro (Versión Laravel) - ¡Iluminando las Noticias! 💡
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+¡Bienvenido/a al repositorio del proyecto "El Faro"! Este no es un periódico cualquiera, es el resultado de una misión: ¡transformar un sitio de noticias estático en una aplicación web dinámica y moderna! Este proyecto fue desarrollado como parte del curso **Taller de Aplicaciones para Internet** del **Instituto Profesional AIEP**.
 
-## About Laravel
+## 🎯 El Desafío
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+El objetivo era tomar el sitio original "El Faro" (construido con HTML, CSS y JS) y darle superpoderes usando **PHP** y el increíble framework **Laravel**. Queríamos pasar de páginas fijas a un sistema donde las noticias fluyen desde una base de datos y los usuarios pueden interactuar. ¡Spoiler: Misión cumplida! 😉
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## ✨ Funcionalidades Implementadas
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Este faro ahora ilumina con:
 
-## Learning Laravel
+* **Arquitectura MVC:** Código organizado como los profesionales, separando Modelo, Vista y Controlador. ¡Adiós al caos!
+* **Noticias desde Base de Datos:** Las noticias ya no están atrapadas en archivos, ¡viven libres en una base de datos MySQL! Se muestran en la portada, por secciones y en páginas de detalle individuales.
+* **Gestión de Usuarios:** ¡Los lectores pueden unirse a la tripulación!
+    * Registro de nuevas cuentas.
+    * Inicio de sesión seguro.
+    * Cierre de sesión.
+    * Página de perfil básica para ver tus datos.
+* **Agregar Noticias (¡Para usuarios registrados!):** Un formulario protegido permite añadir nuevas noticias al sistema, ¡incluso con subida de imagen de portada! 🖼️
+* **Formulario de Contacto:** Un canal para que los visitantes envíen mensajes (con validación incluida).
+* **Páginas Estáticas:** Secciones para las importantes (pero a veces olvidadas) políticas de Privacidad, Cookies y Términos de Uso.
+* **Diseño Responsivo:** Mantenemos el look & feel original con Bootstrap 5, adaptándose a cualquier pantalla.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## 🛠️ Tecnologías Utilizadas
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+* **Backend:** PHP 8+, Laravel 12.x
+* **Frontend:** Blade (motor de plantillas de Laravel), HTML5, CSS3, JavaScript
+* **Framework UI:** Bootstrap 5
+* **Base de Datos:** MySQL / MariaDB
+* **Servidor Desarrollo:** XAMPP (o similar)
+* **Gestor Dependencias:** Composer
+* **Control de Versiones:** Git & GitHub
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## 🚀 Puesta en Marcha Local (¡Para Probarlo!)
 
-## Laravel Sponsors
+¿Quieres ver El Faro brillar en tu propia máquina? Sigue estos pasos:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+1.  **Clona el Repositorio:**
+    ```bash
+    git clone [https://github.com/OowarriorwhiteoO/tu-nuevo-nombre-de-repo.git](https://github.com/OowarriorwhiteoO/tu-nuevo-nombre-de-repo.git)  # Reemplaza con el nombre correcto de tu repo
+    cd tu-nuevo-nombre-de-repo
+    ```
+2.  **Instala Dependencias PHP:**
+    ```bash
+    composer install
+    ```
+3.  **Crea tu Archivo `.env`:**
+    * Copia `.env.example` a un nuevo archivo llamado `.env`.
+    * Edita `.env` y configura tus credenciales de base de datos (`DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`). Asegúrate de que la base de datos exista en tu MySQL local.
+    * Verifica que `APP_URL` sea `http://127.0.0.1:8000` o `http://localhost:8000`.
+    * Asegúrate que `SESSION_DRIVER=file`.
+4.  **Genera la Clave de Aplicación:**
+    ```bash
+    php artisan key:generate
+    ```
+5.  **Crea el Enlace Simbólico de Almacenamiento:** (¡Importante para ver las imágenes subidas!)
+    ```bash
+    php artisan storage:link
+    ```
+6.  **Ejecuta las Migraciones y Seeders:** (Esto crea las tablas y las llena con noticias iniciales)
+    ```bash
+    php artisan migrate:fresh --seed
+    ```
+7.  **Inicia el Servidor de Desarrollo:**
+    ```bash
+    php artisan serve
+    ```
+8.  **¡Navega!** Abre tu navegador y visita `http://127.0.0.1:8000` (o la URL que te dé el comando anterior).
 
-### Premium Partners
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development/)**
-- **[Active Logic](https://activelogic.com)**
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
