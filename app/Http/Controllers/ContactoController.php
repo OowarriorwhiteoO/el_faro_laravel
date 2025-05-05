@@ -2,24 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;                // Representa una petición HTTP entrante.
-use Illuminate\Support\Facades\Log;         // Facade para registrar información y errores.
-use Illuminate\Support\Facades\Validator;   // Facade para la validación de datos.
-use Illuminate\Http\RedirectResponse;       // Clase para respuestas de redirección.
-use Illuminate\Contracts\View\View;         // Interfaz para respuestas de vista.
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
+use App\Models\MensajeContacto; // <-- Importa el nuevo modelo
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Contracts\View\View;
 
 class ContactoController extends Controller
 {
     /**
      * Procesa el envío del formulario de contacto.
-     * Valida los datos recibidos y redirige a una página de agradecimiento.
+     * Valida los datos y los guarda en la base de datos.
      *
-     * @param Request $request La petición HTTP entrante con los datos del formulario.
+     * @param Request $request La petición HTTP entrante.
      * @return \Illuminate\Http\RedirectResponse
      */
     public function enviar(Request $request): RedirectResponse
     {
-        // Define las reglas de validación para los campos del formulario.
+        // Define las reglas de validación.
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:100',
             'email' => 'required|email|max:100',
@@ -33,22 +34,38 @@ class ContactoController extends Controller
             'message.min' => 'El mensaje debe tener al menos 10 caracteres.',
         ]);
 
-        // Comprueba si la validación ha fallado.
+        // Redirige si la validación falla.
         if ($validator->fails()) {
-            // Redirige de vuelta a la página anterior con los errores y los datos introducidos.
             return redirect(route('home') . '#contacto')
                    ->withErrors($validator)
                    ->withInput();
         }
 
-        // Obtiene los datos que pasaron la validación.
-        $validatedData = $validator->validated();
-        // Registra la recepción de los datos del formulario (acción simulada).
-        Log::info('Formulario de contacto recibido:', $validatedData);
+        // Intenta guardar el mensaje en la base de datos.
+        try {
+            $validatedData = $validator->validated();
 
-        // Redirige a la ruta de agradecimiento con un mensaje flash de éxito.
-        return redirect()->route('contacto.gracias')
-                         ->with('success', '¡Gracias por tu mensaje! Nos pondremos en contacto contigo pronto.');
+            // *** CÓDIGO MODIFICADO PARA GUARDAR EN BD ***
+            // Utiliza el modelo MensajeContacto para crear un nuevo registro.
+            MensajeContacto::create([
+                'nombre' => $validatedData['name'], // Mapea 'name' del formulario a 'nombre' de la BD.
+                'email' => $validatedData['email'],
+                'mensaje' => $validatedData['message'], // Mapea 'message' del formulario a 'mensaje' de la BD.
+            ]);
+            // *** FIN CÓDIGO MODIFICADO ***
+
+            // Redirige a la página de agradecimiento con un mensaje de éxito.
+            return redirect()->route('contacto.gracias')
+                         ->with('success', '¡Gracias por tu mensaje! Ha sido recibido correctamente.'); // Mensaje ligeramente modificado
+
+        } catch (\Exception $e) {
+            // Registra el error si falla el guardado en la base de datos.
+            Log::error("Error al guardar mensaje de contacto: " . $e->getMessage());
+            // Redirige de vuelta con un mensaje de error general.
+            return redirect(route('home') . '#contacto')
+                        ->with('error', 'Ocurrió un error al enviar tu mensaje. Por favor, inténtalo de nuevo.')
+                        ->withInput();
+        }
     }
 
     /**
@@ -56,7 +73,7 @@ class ContactoController extends Controller
      *
      * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      */
-    public function mostrarGracias(): View|RedirectResponse // Añadido tipo de retorno
+    public function mostrarGracias(): View|RedirectResponse
     {
         // Verifica si existe un mensaje de éxito en la sesión.
         if (session('success')) {
