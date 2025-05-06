@@ -73,8 +73,7 @@ class ArticuloController extends Controller
             // Verifica si se subió un archivo de imagen válido y lo guarda.
             if ($request->hasFile('imagen') && $request->file('imagen')->isValid()) {
                 // Almacena la imagen en 'storage/app/public/articulos' y obtiene su ruta relativa.
-                $imagePath = $request->file('imagen')->store('articulos', 'public');
-            }
+                $imagePath = $request->file('imagen')->store('articulos', 's3');            }
 
             // Crea el nuevo registro de artículo en la base de datos.
             Articulo::create([

@@ -54,7 +54,7 @@
                 @php
                     // Determina la ruta correcta de la imagen (storage o assets).
                     if ($articulo->imagenUrl && Str::contains($articulo->imagenUrl, '/')) {
-                        $imgPath = asset('storage/' . $articulo->imagenUrl);
+                        $imgPath = Illuminate\Support\Facades\Storage::disk('s3')->url($articulo->imagenUrl);
                     } elseif ($articulo->imagenUrl) {
                         $imgPath = asset('assets/img/' . $articulo->imagenUrl);
                     } else {
