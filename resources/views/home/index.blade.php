@@ -160,7 +160,7 @@
                     $columnClasses = $index == 0 ? 'col-md-6 col-lg-8' : 'col-md-6 col-lg-4';
                     $imgHeight = $index == 0 ? '280px' : '180px';
                     if ($articulo->imagenUrl && Str::contains($articulo->imagenUrl, '/')) {
-                        $imgPath = Illuminate\Support\Facades\Storage::disk('s3')->url($articulo->imagenUrl);
+                        $imgPath = asset('storage/' . $articulo->imagenUrl);
                     } elseif ($articulo->imagenUrl) {
                         $imgPath = asset('assets/img/' . $articulo->imagenUrl);
                     } else {
