@@ -2,107 +2,165 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Articulo;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Log;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\View\View; // Añadido para type hinting
-use Illuminate\Http\RedirectResponse; // Añadido para type hinting
+use App\Models\Seccion; // Asegúrate de que Seccion esté importado si lo usas aquí directamente.
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage; // <--- IMPORTANTE: Añade esta línea
 
 class ArticuloController extends Controller
 {
     /**
-     * Muestra la página de detalle de un artículo específico.
-     * Utiliza Route Model Binding para inyectar el modelo Articulo.
+     * Display a listing of the resource.
      *
-     * @param  \App\Models\Articulo $articulo
-     * @return \Illuminate\View\View
+     * @return \Illuminate\Http\Response
      */
-    public function mostrar(Articulo $articulo): View
+    public function index()
     {
-        // Retorna la vista de detalle pasando el artículo encontrado.
-        return view('articulos.detalle', [
-            'articulo' => $articulo
-        ]);
+        // Lógica para mostrar una lista de artículos si es necesario
+        $articulos = Articulo::with('seccion')->orderBy('fechaPublicacion', 'desc')->paginate(10);
+        return view('articulos.index', compact('articulos')); // Asumiendo que tienes una vista articulos.index
     }
 
     /**
-     * Valida y guarda un nuevo artículo en la base de datos.
-     * Maneja la subida de una imagen opcional.
+     * Show the form for creating a new resource.
      *
-     * @param  \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\RedirectResponse
+     * @return \Illuminate\Http\Response
      */
-    public function store(Request $request): RedirectResponse
+    public function create()
     {
-        // Define las reglas de validación para los datos del formulario.
-        $validator = Validator::make($request->all(), [
-            'section' => 'required|integer|exists:secciones,idSeccion', // Debe existir en la tabla secciones.
-            'category' => 'nullable|string|max:100',
-            'title' => 'required|string|max:255|unique:articulos,titulo', // Título único en la tabla articulos.
-            'description' => 'required|string|min:10',
-            'contenido' => 'nullable|string', // Contenido completo opcional.
-            'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048', // Imagen opcional con validaciones de tipo y tamaño.
-        ], [
-            // Mensajes de error personalizados para una mejor experiencia de usuario.
-            'section.required' => 'Debes seleccionar una sección.',
-            'section.exists' => 'La sección seleccionada no es válida.',
-            'title.required' => 'El título es obligatorio.',
-            'title.unique' => 'Ya existe un artículo con este título.',
-            'description.required' => 'La descripción breve es obligatoria.',
-            'description.min' => 'La descripción debe tener al menos 10 caracteres.',
-            'imagen.image' => 'El archivo debe ser una imagen.',
-            'imagen.mimes' => 'La imagen debe ser de tipo: jpeg, png, jpg, gif, webp.',
-            'imagen.max' => 'La imagen no debe pesar más de 2MB.',
+        // Lógica para mostrar el formulario de creación
+        // Necesitarás pasar las secciones al formulario si tienes un selector de secciones
+        $secciones = Seccion::all();
+        return view('articulos.create', compact('secciones')); // Asumiendo que tienes una vista articulos.create
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        $validatedData = $request->validate([
+            'titulo' => 'required|min:3|max:255',
+            'descripcion' => 'nullable|string|max:500', // Ajusta el max según necesidad
+            'contenido' => 'nullable|string',
+            'imagenUrl' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:4096', // Acepta webp, max 4MB
+            'imagenAlt' => 'nullable|string|max:255',
+            'categoria' => 'nullable|string|max:100',
+            'fechaPublicacion' => 'nullable|date',
+            'idSeccion' => 'required|exists:seccions,idSeccion',
         ]);
 
-        // Si la validación falla, redirige de vuelta al formulario con errores y datos previos.
-        if ($validator->fails()) {
-            return redirect(route('home') . '#nueva-noticia')
-                        ->withErrors($validator)
-                        ->withInput();
+        if ($request->hasFile('imagenUrl')) {
+            // Guarda la imagen en storage/app/public/img/articulos
+            // El método store devuelve la ruta relativa como 'img/articulos/nombrearchivoaleatorio.jpg'
+            $path = $request->file('imagenUrl')->store('img/articulos', 'public');
+            $validatedData['imagenUrl'] = $path;
+        } else {
+            $validatedData['imagenUrl'] = null; // O una imagen por defecto si lo prefieres
         }
 
-        // Intenta guardar el artículo y la imagen.
-        try {
-            $validatedData = $validator->validated(); // Obtiene solo los datos que pasaron la validación.
-            $imagePath = null; // Inicializa la ruta de la imagen.
+        // Si tienes un sistema de usuarios y quieres asignar el autor:
+        // if (auth()->check()) {
+        //     $validatedData['idUsuario'] = auth()->id(); // Asumiendo que tienes una columna idUsuario en tu tabla articulos
+        // }
 
-            // Verifica si se subió un archivo de imagen válido y lo guarda.
-            if ($request->hasFile('imagen') && $request->file('imagen')->isValid()) {
-                // Almacena la imagen en 'storage/app/public/articulos' y obtiene su ruta relativa.
-                $imagePath = $request->file('imagen')->store('articulos', 'public');
+        Articulo::create($validatedData);
+
+        // Redirige a donde sea más apropiado, por ejemplo, la página de inicio o el detalle del artículo.
+        // La ruta 'home.index' es un ejemplo, cámbiala si es necesario.
+        return redirect()->route('home.index')->with('status', 'Artículo creado exitosamente.');
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  string  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function mostrar($id)
+    {
+        $articulo = Articulo::with('seccion')->findOrFail($id);
+        return view('articulos.detalle', compact('articulo'));
+    }
+
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  \App\Models\Articulo  $articulo  // Usando Route Model Binding
+     * @return \Illuminate\Http\Response
+     */
+    public function edit(Articulo $articulo) // Laravel puede inyectar el modelo directamente si la variable coincide con el parámetro de la ruta
+    {
+        $secciones = Seccion::all(); // Necesario para el selector de secciones en el formulario de edición
+        // El nombre del parámetro en la ruta debe ser {articulo}, ej: Route::get('/articulos/{articulo}/editar', ...)
+        return view('articulos.edit', compact('articulo', 'secciones')); // Asumiendo que tienes una vista articulos.edit
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Articulo  $articulo // Usando Route Model Binding
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, Articulo $articulo)
+    {
+        $validatedData = $request->validate([
+            'titulo' => 'required|min:3|max:255',
+            'descripcion' => 'nullable|string|max:500',
+            'contenido' => 'nullable|string',
+            'imagenUrl' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:4096',
+            'imagenAlt' => 'nullable|string|max:255',
+            'categoria' => 'nullable|string|max:100',
+            'fechaPublicacion' => 'nullable|date',
+            'idSeccion' => 'required|exists:seccions,idSeccion',
+        ]);
+
+        if ($request->hasFile('imagenUrl')) {
+            // 1. Eliminar la imagen anterior si existe y no es una imagen por defecto
+            if ($articulo->imagenUrl) {
+                // Comprueba que no sea una imagen por defecto que no quieras borrar
+                // if ($articulo->imagenUrl !== 'path/to/default.jpg') {
+                Storage::disk('public')->delete($articulo->imagenUrl);
+                // }
             }
 
-            // Crea el nuevo registro de artículo en la base de datos.
-            Articulo::create([
-                'titulo' => $validatedData['title'],
-                'descripcion' => $validatedData['description'],
-                'categoria' => $validatedData['category'] ?? null,
-                'idSeccion' => $validatedData['section'],
-                'fechaPublicacion' => Carbon::now(), // Asigna la fecha y hora actual.
-                'imagenUrl' => $imagePath, // Guarda la ruta de la imagen o null.
-                'imagenAlt' => $imagePath ? ('Imagen para ' . $validatedData['title']) : null,
-                'contenido' => $validatedData['contenido'] ?? null, // Guarda el contenido completo o null.
-            ]);
-
-            // Redirige a la página de inicio con un mensaje de éxito.
-            return redirect()->route('home')->with('success', '¡Noticia agregada con éxito!');
-
-        } catch (\Exception $e) {
-            // Registra cualquier error que ocurra durante el proceso.
-            Log::error("Error al guardar el artículo: " . $e->getMessage());
-
-            // Si se había guardado una imagen pero falló la BD, intenta borrar la imagen.
-            if (isset($imagePath) && $imagePath && Storage::disk('public')->exists($imagePath)) {
-                 Storage::disk('public')->delete($imagePath);
-            }
-            // Redirige de vuelta al formulario con un mensaje de error general.
-            return redirect(route('home') . '#nueva-noticia')
-                        ->with('error', 'Ocurrió un error al guardar la noticia. Inténtalo de nuevo.')
-                        ->withInput();
+            // 2. Guardar la nueva imagen
+            $path = $request->file('imagenUrl')->store('img/articulos', 'public');
+            $validatedData['imagenUrl'] = $path;
         }
+        // Si no se sube una nueva imagen, $validatedData['imagenUrl'] no se establecerá,
+        // por lo que el valor actual en $articulo->imagenUrl se conservará al hacer update,
+        // a menos que explícitamente quieras permitir "quitar" la imagen.
+        // Si quieres permitir quitar la imagen (asignar null), necesitarías un campo adicional
+        // en el formulario, por ejemplo, un checkbox "eliminar_imagen_actual".
+
+        $articulo->update($validatedData);
+
+        // Redirigir al detalle del artículo actualizado o a una lista.
+        return redirect()->route('articulos.mostrar', ['id' => $articulo->idArticulo])->with('status', 'Artículo actualizado exitosamente.');
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Models\Articulo  $articulo // Usando Route Model Binding
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(Articulo $articulo)
+    {
+        // Eliminar la imagen asociada si existe
+        if ($articulo->imagenUrl) {
+            Storage::disk('public')->delete($articulo->imagenUrl);
+        }
+
+        $articulo->delete();
+
+        // Redirigir a la lista de artículos o a la página de inicio
+        return redirect()->route('home.index')->with('status', 'Artículo eliminado exitosamente.');
     }
 }
