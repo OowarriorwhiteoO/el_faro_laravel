@@ -9,11 +9,18 @@
             {{-- Muestra el título principal del artículo --}}
             <h1 class="display-5 mb-3">{{ $articulo->titulo }}</h1>
 
-            {{-- Muestra metadatos: categoría (si existe) y fecha de publicación formateada --}}
+            {{-- Muestra metadatos: categoría, sección, autor (placeholder) y fecha de publicación formateada --}}
             <div class="mb-4 text-muted border-bottom pb-3">
+                @if ($articulo->seccion)
+                    <span class="badge bg-success text-dark me-2">{{ $articulo->seccion->nombreSeccion }}</span> |
+                @endif
                 @if ($articulo->categoria)
                     <span class="badge bg-info text-dark me-2">{{ $articulo->categoria }}</span> |
                 @endif
+                {{-- Placeholder para el nombre del autor - Se implementará en el Paso 4 --}}
+                {{-- @if ($articulo->autor)
+                    <i class="fas fa-user me-1"></i> Por: {{ $articulo->autor->nombre }} |
+                @endif --}}
                 <i class="fas fa-calendar-alt me-1"></i> Publicado:
                 @php
                     // Formatea la fecha de publicación si está disponible.
@@ -21,26 +28,10 @@
                     if (!empty($articulo->fechaPublicacion)) {
                         try {
                             $fechaPublicacionObj = \Carbon\Carbon::parse($articulo->fechaPublicacion);
-                            $meses = [
-                                'enero',
-                                'febrero',
-                                'marzo',
-                                'abril',
-                                'mayo',
-                                'junio',
-                                'julio',
-                                'agosto',
-                                'septiembre',
-                                'octubre',
-                                'noviembre',
-                                'diciembre',
-                            ];
-                            $fecha =
-                                $fechaPublicacionObj->format('j') .
-                                ' de ' .
-                                $meses[intval($fechaPublicacionObj->format('n')) - 1] .
-                                ' de ' .
-                                $fechaPublicacionObj->format('Y');
+                            // Formato más simple y localizado por Carbon si es posible, o tu formato manual.
+                            // Para tu formato manual específico:
+                            $meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+                            $fecha = $fechaPublicacionObj->format('j') . ' de ' . $meses[intval($fechaPublicacionObj->format('n')) - 1] . ' de ' . $fechaPublicacionObj->format('Y');
                         } catch (\Exception $e) {
                             // Mantiene 'Fecha no disponible' si hay error.
                         }
@@ -51,18 +42,15 @@
 
             {{-- Muestra la imagen principal del artículo --}}
             <div class="text-center mb-4">
-                @php
-                    // Determina la ruta correcta de la imagen (storage o assets).
-                    if ($articulo->imagenUrl && Str::contains($articulo->imagenUrl, '/')) {
-                        $imgPath = asset('storage/' . $articulo->imagenUrl);
-                    } elseif ($articulo->imagenUrl) {
-                        $imgPath = asset('assets/img/' . $articulo->imagenUrl);
-                    } else {
-                        $imgPath = asset('assets/img/Logo1.jpeg'); // Imagen por defecto.
-                    }
-                @endphp
-                <img src="{{ $imgPath }}" alt="{{ $articulo->imagenAlt ?? $articulo->titulo }}"
-                    class="img-fluid rounded shadow-sm" style="max-height: 500px; width: auto; background-color: #eee;">
+                @if ($articulo->imagenUrl)
+                    {{-- MODIFICACIÓN AQUÍ para la imagen principal --}}
+                    <img src="{{ Storage::disk('public')->url($articulo->imagenUrl) }}" alt="{{ $articulo->imagenAlt ?? $articulo->titulo }}"
+                        class="img-fluid rounded shadow-sm" style="max-height: 500px; width: auto; background-color: #eee;">
+                @else
+                    {{-- Imagen por defecto si no hay imagenUrl --}}
+                    <img src="{{ asset('assets/img/Logo1.jpeg') }}" alt="{{ $articulo->titulo }}"
+                        class="img-fluid rounded shadow-sm" style="max-height: 500px; width: auto; background-color: #eee;">
+                @endif
             </div>
 
             {{-- Muestra la descripción breve (entradilla) si existe --}}
@@ -72,7 +60,38 @@
 
             {{-- Muestra el contenido completo del artículo (renderiza HTML) --}}
             <div class="articulo-contenido">
-                {!! $articulo->contenido !!}
+                {!! $articulo->contenido !!} {{-- Cuidado con {!! !!} si el contenido no es 100% confiable o sanitizado al guardar --}}
+            </div>
+
+            {{-- Botones de Acción (Volver, Editar, Eliminar) --}}
+            <div class="mt-4 pt-3 border-top">
+                <a href="{{ url()->previous() }}" class="btn btn-outline-secondary btn-sm">
+                    <i class="fas fa-arrow-left me-1"></i> Volver
+                </a>
+
+                {{-- Botones de Editar y Eliminar (se mostrarán condicionalmente en Paso 4) --}}
+                @auth
+                    {{-- Ejemplo usando Gate (preferido) - Definirás 'update-articulo' y 'delete-articulo' Gates/Policies --}}
+                    {{-- @can('update', $articulo) --}}
+                    @if(Gate::allows('update-articulo', $articulo)) {{-- Placeholder para la lógica de autorización --}}
+                        <a href="{{ route('articulos.edit', $articulo->idArticulo) }}" class="btn btn-outline-primary btn-sm ms-2">
+                            <i class="fas fa-edit me-1"></i> Editar
+                        </a>
+                    @endif
+                    {{-- @endcan --}}
+
+                    {{-- @can('delete', $articulo) --}}
+                    @if(Gate::allows('delete-articulo', $articulo)) {{-- Placeholder para la lógica de autorización --}}
+                        <form action="{{ route('articulos.destroy', $articulo->idArticulo) }}" method="POST" class="d-inline ms-2" onsubmit="return confirm('¿Estás seguro de que quieres eliminar este artículo?');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-outline-danger btn-sm">
+                                <i class="fas fa-trash-alt me-1"></i> Eliminar
+                            </button>
+                        </form>
+                    @endif
+                    {{-- @endcan --}}
+                @endauth
             </div>
 
         </article>
