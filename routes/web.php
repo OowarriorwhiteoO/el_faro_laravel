@@ -10,8 +10,8 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ArticuloController;
 use App\Http\Controllers\PaginaEstaticaController;
 use App\Http\Controllers\PerfilController;
-use App\Http\Controllers\UsuarioController; // <-- Importar UsuarioController
-use App\Models\Articulo;
+use App\Http\Controllers\UsuarioController;
+// use App\Models\Articulo; // No necesitas importar modelos en el archivo de rutas generalmente
 
 /*
 |--------------------------------------------------------------------------
@@ -19,11 +19,36 @@ use App\Models\Articulo;
 |--------------------------------------------------------------------------
 */
 
-// --- Rutas Principales, Secciones, Artículos ---
+// --- Rutas Principales ---
 Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/seccion/{slug}', [SeccionController::class, 'mostrar'])->name('seccion.mostrar');
+
+// --- Rutas de Artículos ---
+// Es buena práctica agrupar las rutas de un recurso.
+// También puedes usar Route::resource si tu controlador sigue todas las convenciones.
+
+// Mostrar el detalle de un artículo (ya la tenías)
 Route::get('/articulo/{articulo}', [ArticuloController::class, 'mostrar'])->name('articulo.detalle');
+
+// Formulario para crear un nuevo artículo (si no está en la página de inicio)
+Route::get('/articulos/crear', [ArticuloController::class, 'create'])->middleware('auth')->name('articulos.create');
+
+// Guardar un nuevo artículo (ya la tenías, nombre 'articulo.store')
 Route::post('/articulo/guardar', [ArticuloController::class, 'store'])->middleware('auth')->name('articulo.store');
+// Si quieres seguir la convención plural 'articulos.store', la URL sería POST /articulos
+
+// Formulario para editar un artículo existente
+Route::get('/articulos/{articulo}/editar', [ArticuloController::class, 'edit'])->middleware('auth')->name('articulos.edit'); // <--- RUTA IMPORTANTE PARA EL ERROR ACTUAL
+
+// Actualizar un artículo existente
+Route::put('/articulos/{articulo}', [ArticuloController::class, 'update'])->middleware('auth')->name('articulos.update');
+
+// Eliminar un artículo existente
+Route::delete('/articulos/{articulo}', [ArticuloController::class, 'destroy'])->middleware('auth')->name('articulos.destroy');
+
+
+// --- Rutas Secciones ---
+Route::get('/seccion/{slug}', [SeccionController::class, 'mostrar'])->name('seccion.mostrar');
+
 
 // --- Rutas Formulario de Contacto ---
 Route::post('/contacto/enviar', [ContactoController::class, 'enviar'])->name('contacto.enviar');
@@ -45,6 +70,4 @@ Route::get('/politica-cookies', [PaginaEstaticaController::class, 'cookies'])->n
 Route::get('/perfil', [PerfilController::class, 'index'])->middleware('auth')->name('perfil.index');
 
 // --- RUTA LISTADO DE USUARIOS ---
-// Ruta para mostrar la lista de usuarios registrados.
-Route::get('/usuarios', [UsuarioController::class, 'index'])->name('usuarios.index'); // <-- AÑADIDA
-// NOTA: En una aplicación real, esta ruta debería estar protegida (ej: ->middleware('admin'))
+Route::get('/usuarios', [UsuarioController::class, 'index'])->name('usuarios.index');

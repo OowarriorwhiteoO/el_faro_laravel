@@ -12,11 +12,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('secciones', function (Blueprint $table) {
-            $table->id('idSeccion'); // Columna ID autoincremental, clave primaria
-            $table->string('nombreSeccion')->unique(); // Nombre de la sección (ej: Nacional), único
-            $table->string('slug')->unique(); // Versión 'amigable para URL' del nombre (ej: nacional), único
-            $table->timestamps(); // Columnas created_at y updated_at
+        Schema::create('seccions', function (Blueprint $table) {
+            $table->id('idSeccion'); // Esto crea un BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY
+            $table->string('nombreSeccion')->unique();
+            $table->string('slug')->unique();
+            $table->timestamps();
         });
     }
 

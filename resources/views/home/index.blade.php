@@ -15,75 +15,48 @@
             @endif
         </div>
         <div class="carousel-inner">
-            {{-- Primer item del carrusel --}}
-            @isset($noticiasNacionales[0])
-                @php
-                    $item1 = $noticiasNacionales[0];
-                    // MODIFICACIÓN AQUÍ para $carouselImgPath1
-                    if ($item1->imagenUrl) {
-                        $carouselImgPath1 = Storage::disk('public')->url($item1->imagenUrl);
-                    } else {
-                        $carouselImgPath1 = asset('assets/img/placeholder.jpg'); // Placeholder si no hay imagen
-                    }
-                @endphp
+            @php
+                $carouselItems =
+                    isset($noticiasNacionales) && $noticiasNacionales instanceof \Illuminate\Support\Collection
+                        ? $noticiasNacionales
+                        : collect();
+            @endphp
+            @if ($carouselItems->count() > 0)
+                @foreach ($carouselItems->take(3) as $index => $item)
+                    @php
+                        if ($item->imagenUrl) {
+                            $carouselImgPath = Storage::disk('public')->url($item->imagenUrl);
+                        } else {
+                            $carouselImgPath = asset('assets/img/placeholder.jpg');
+                        }
+                    @endphp
+                    <div class="carousel-item {{ $loop->first ? 'active' : '' }}" data-bs-interval="3000">
+                        <img src="{{ $carouselImgPath }}" class="d-block w-100"
+                            alt="{{ $item->imagenAlt ?? $item->titulo }}"
+                            style="max-height: 500px; object-fit: cover; background-color: #eee;" />
+                        <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 p-3 rounded">
+                            <h5>{{ $item->titulo }}</h5>
+                            <p>{{ Str::limit($item->descripcion, 100) }}</p>
+                            @if ($item->autor)
+                                {{-- Mostrar autor en carrusel también --}}
+                                <p class="small mb-0" style="font-size: 0.8em;"><i
+                                        class="fas fa-user fa-sm me-1"></i>{{ $item->autor->nombre }}</p>
+                            @endif
+                            <a href="{{ route('articulo.detalle', ['articulo' => $item->idArticulo]) }}"
+                                class="btn btn-primary btn-sm mt-1">Leer más</a>
+                        </div>
+                    </div>
+                @endforeach
+            @else
                 <div class="carousel-item active" data-bs-interval="3000">
-                    <img src="{{ $carouselImgPath1 }}" class="d-block w-100" alt="{{ $item1->imagenAlt ?? $item1->titulo }}"
+                    <img src="{{ asset('assets/img/placeholder.jpg') }}" class="d-block w-100" alt="Noticia Destacada"
                         style="max-height: 500px; object-fit: cover; background-color: #eee;" />
                     <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 p-3 rounded">
-                        <h5>{{ $item1->titulo }}</h5>
-                        <p>{{ Str::limit($item1->descripcion, 100) }}</p>
-                        <a href="{{ route('articulo.detalle', ['articulo' => $item1->idArticulo]) }}"
-                            class="btn btn-primary btn-sm">Leer más</a>
+                        <h5>Bienvenido a El Faro</h5>
+                        <p>Las últimas noticias directamente para ti.</p>
                     </div>
                 </div>
-            @endisset
-
-            {{-- Segundo item del carrusel --}}
-            @isset($noticiasNacionales[1])
-                @php
-                    $item2 = $noticiasNacionales[1];
-                    // MODIFICACIÓN AQUÍ para $carouselImgPath2
-                    if ($item2->imagenUrl) {
-                        $carouselImgPath2 = Storage::disk('public')->url($item2->imagenUrl);
-                    } else {
-                        $carouselImgPath2 = asset('assets/img/placeholder.jpg'); // Placeholder si no hay imagen
-                    }
-                @endphp
-                <div class="carousel-item" data-bs-interval="3000">
-                    <img src="{{ $carouselImgPath2 }}" class="d-block w-100" alt="{{ $item2->imagenAlt ?? $item2->titulo }}"
-                        style="max-height: 500px; object-fit: cover; background-color: #eee;" />
-                    <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 p-3 rounded">
-                        <h5>{{ $item2->titulo }}</h5>
-                        <p>{{ Str::limit($item2->descripcion, 100) }}</p>
-                        <a href="{{ route('articulo.detalle', ['articulo' => $item2->idArticulo]) }}"
-                            class="btn btn-primary btn-sm">Leer más</a>
-                    </div>
-                </div>
-            @endisset
-
-            {{-- Tercer item del carrusel - Asumo que quieres usar $noticiasNacionales[2] o un artículo de otra sección --}}
-            {{-- Si es de $noticiasTecnologia[0] como en tu código original, lo mantenemos así --}}
-            @isset($noticiasNacionales[2]) {{-- O puedes usar $noticiasTecnologia[0] si esa era la intención --}}
-                @php
-                    $item3 = $noticiasNacionales[2]; // O $noticiasTecnologia[0]
-                    // MODIFICACIÓN AQUÍ para $carouselImgPath3
-                    if ($item3->imagenUrl) {
-                        $carouselImgPath3 = Storage::disk('public')->url($item3->imagenUrl);
-                    } else {
-                        $carouselImgPath3 = asset('assets/img/placeholder.jpg'); // Placeholder si no hay imagen
-                    }
-                @endphp
-                <div class="carousel-item" data-bs-interval="3000">
-                    <img src="{{ $carouselImgPath3 }}" class="d-block w-100" alt="{{ $item3->imagenAlt ?? $item3->titulo }}"
-                        style="max-height: 500px; object-fit: cover; background-color: #eee;" />
-                    <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 p-3 rounded">
-                        <h5>{{ $item3->titulo }}</h5>
-                        <p>{{ Str::limit($item3->descripcion, 100) }}</p>
-                        <a href="{{ route('articulo.detalle', ['articulo' => $item3->idArticulo]) }}"
-                            class="btn btn-primary btn-sm">Leer más</a>
-                    </div>
-                </div>
-            @endisset
+            @endif
         </div>
         <button class="carousel-control-prev" type="button" data-bs-target="#carouselNoticias" data-bs-slide="prev"> <span
                 class="carousel-control-prev-icon" aria-hidden="true"></span> <span class="visually-hidden">Anterior</span>
@@ -94,6 +67,7 @@
     </section>
 
     <section id="contacto" class="mb-5 p-4 bg-light rounded shadow-sm border">
+        {{-- ... (Código Form Contacto sin cambios) ... --}}
         <div class="text-center"> <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse"
                 data-bs-target="#collapseContacto"
                 aria-expanded="{{ $errors->hasAny(['name', 'email', 'message']) ? 'true' : 'false' }}"
@@ -143,6 +117,7 @@
         </div>
     </section>
 
+    {{-- Sección Noticias Generales --}}
     <section id="general" class="articles-section mb-5">
         <h2 class="border-bottom pb-2 mb-4">
             Noticias Generales
@@ -155,11 +130,10 @@
                 @php
                     $columnClasses = $index == 0 ? 'col-md-6 col-lg-8' : 'col-md-6 col-lg-4';
                     $imgHeight = $index == 0 ? '280px' : '180px';
-                    // MODIFICACIÓN AQUÍ para $imgPath
                     if ($articulo->imagenUrl) {
                         $imgPath = Storage::disk('public')->url($articulo->imagenUrl);
                     } else {
-                        $imgPath = asset('assets/img/Logo1.jpeg'); // Placeholder
+                        $imgPath = asset('assets/img/Logo1.jpeg');
                     }
                 @endphp
                 <div class="{{ $columnClasses }} mb-4">
@@ -171,7 +145,14 @@
                             <h5 class="card-title h6">{{ $articulo->titulo }}</h5>
                             <span
                                 class="badge bg-primary mb-2 align-self-start">{{ $articulo->categoria ?? 'General' }}</span>
-                            <p class="card-text small flex-grow-1">{{ $articulo->descripcion }}</p>
+                            {{-- MOSTRAR AUTOR --}}
+                            @if ($articulo->autor)
+                                <p class="card-text small text-muted mb-1"><i
+                                        class="fas fa-user fa-sm me-1"></i>{{ $articulo->autor->nombre }}</p>
+                            @else
+                                {{-- <p class="card-text small text-muted mb-1"><i class="fas fa-user-slash fa-sm me-1"></i>Autor no disponible</p> --}}
+                            @endif
+                            <p class="card-text small flex-grow-1">{{ Str::limit($articulo->descripcion, 70) }}</p>
                             <div class="mt-auto text-end">
                                 <a href="{{ route('articulo.detalle', ['articulo' => $articulo->idArticulo]) }}"
                                     class="btn btn-outline-primary btn-sm">Leer más</a>
@@ -191,6 +172,7 @@
         </div>
     </section>
 
+    {{-- Sección Nacional --}}
     <section id="nacional" class="articles-section my-5 bg-light p-4 rounded border">
         <h2 class="border-bottom pb-2 mb-4">
             Nacional (Chile)
@@ -203,11 +185,10 @@
                 @php
                     $columnClasses = 'col-md-4';
                     $imgHeight = '180px';
-                    // MODIFICACIÓN AQUÍ para $imgPath
                     if ($articulo->imagenUrl) {
                         $imgPath = Storage::disk('public')->url($articulo->imagenUrl);
                     } else {
-                        $imgPath = asset('assets/img/Logo1.jpeg'); // Placeholder
+                        $imgPath = asset('assets/img/Logo1.jpeg');
                     }
                 @endphp
                 <div class="{{ $columnClasses }} mb-4">
@@ -219,7 +200,12 @@
                             <h5 class="card-title h6">{{ $articulo->titulo }}</h5>
                             <span
                                 class="badge bg-primary mb-2 align-self-start">{{ $articulo->categoria ?? 'Nacional' }}</span>
-                            <p class="card-text small flex-grow-1">{{ $articulo->descripcion }}</p>
+                            {{-- MOSTRAR AUTOR --}}
+                            @if ($articulo->autor)
+                                <p class="card-text small text-muted mb-1"><i
+                                        class="fas fa-user fa-sm me-1"></i>{{ $articulo->autor->nombre }}</p>
+                            @endif
+                            <p class="card-text small flex-grow-1">{{ Str::limit($articulo->descripcion, 70) }}</p>
                             <div class="mt-auto text-end">
                                 <a href="{{ route('articulo.detalle', ['articulo' => $articulo->idArticulo]) }}"
                                     class="btn btn-outline-primary btn-sm">Leer más</a>
@@ -239,6 +225,7 @@
         </div>
     </section>
 
+    {{-- Sección Tecnología --}}
     <section id="tecnologia" class="articles-section my-5">
         <h2 class="border-bottom pb-2 mb-4">
             Tecnología
@@ -251,11 +238,10 @@
                 @php
                     $columnClasses = 'col-md-4';
                     $imgHeight = '180px';
-                    // MODIFICACIÓN AQUÍ para $imgPath
                     if ($articulo->imagenUrl) {
                         $imgPath = Storage::disk('public')->url($articulo->imagenUrl);
                     } else {
-                        $imgPath = asset('assets/img/Logo1.jpeg'); // Placeholder
+                        $imgPath = asset('assets/img/Logo1.jpeg');
                     }
                 @endphp
                 <div class="{{ $columnClasses }} mb-4">
@@ -267,7 +253,12 @@
                             <h5 class="card-title h6">{{ $articulo->titulo }}</h5>
                             <span
                                 class="badge bg-primary mb-2 align-self-start">{{ $articulo->categoria ?? 'Tecnología' }}</span>
-                            <p class="card-text small flex-grow-1">{{ $articulo->descripcion }}</p>
+                            {{-- MOSTRAR AUTOR --}}
+                            @if ($articulo->autor)
+                                <p class="card-text small text-muted mb-1"><i
+                                        class="fas fa-user fa-sm me-1"></i>{{ $articulo->autor->nombre }}</p>
+                            @endif
+                            <p class="card-text small flex-grow-1">{{ Str::limit($articulo->descripcion, 70) }}</p>
                             <div class="mt-auto text-end">
                                 <a href="{{ route('articulo.detalle', ['articulo' => $articulo->idArticulo]) }}"
                                     class="btn btn-outline-primary btn-sm">Leer más</a>
@@ -287,6 +278,7 @@
         </div>
     </section>
 
+    {{-- Sección Multimedia y Podcast (sin cambios de autor en tarjetas) --}}
     <section id="multimedia" class="multimedia my-5 p-4 bg-light rounded border">
         <h2 class="text-center mb-4">Multimedia Destacada</h2>
         <div class="row g-4 justify-content-center">
@@ -316,7 +308,6 @@
             </div>
         </div>
     </section>
-
     <section id="podcast" class="podcast my-5 text-center">
         <img src="{{ asset('assets/img/podcastimages.jpg') }}" width="100"
             alt="Micrófono y auriculares: logo podcast" class="mb-2 rounded-circle" />
@@ -327,6 +318,7 @@
         </audio>
     </section>
 
+    {{-- Sección Deportes --}}
     <section id="deportes" class="articles-section my-5">
         <h2 class="border-bottom pb-2 mb-4">
             Deportes
@@ -339,11 +331,10 @@
                 @php
                     $columnClasses = 'col-md-4';
                     $imgHeight = '180px';
-                    // MODIFICACIÓN AQUÍ para $imgPath
                     if ($articulo->imagenUrl) {
                         $imgPath = Storage::disk('public')->url($articulo->imagenUrl);
                     } else {
-                        $imgPath = asset('assets/img/Logo1.jpeg'); // Placeholder
+                        $imgPath = asset('assets/img/Logo1.jpeg');
                     }
                 @endphp
                 <div class="{{ $columnClasses }} mb-4">
@@ -355,7 +346,12 @@
                             <h5 class="card-title h6">{{ $articulo->titulo }}</h5>
                             <span
                                 class="badge bg-primary mb-2 align-self-start">{{ $articulo->categoria ?? 'Deportes' }}</span>
-                            <p class="card-text small flex-grow-1">{{ $articulo->descripcion }}</p>
+                            {{-- MOSTRAR AUTOR --}}
+                            @if ($articulo->autor)
+                                <p class="card-text small text-muted mb-1"><i
+                                        class="fas fa-user fa-sm me-1"></i>{{ $articulo->autor->nombre }}</p>
+                            @endif
+                            <p class="card-text small flex-grow-1">{{ Str::limit($articulo->descripcion, 70) }}</p>
                             <div class="mt-auto text-end">
                                 <a href="{{ route('articulo.detalle', ['articulo' => $articulo->idArticulo]) }}"
                                     class="btn btn-outline-primary btn-sm">Leer más</a>
@@ -375,6 +371,7 @@
         </div>
     </section>
 
+    {{-- Sección Negocios --}}
     <section id="negocios" class="articles-section my-5 bg-light p-4 rounded border">
         <h2 class="border-bottom pb-2 mb-4">
             Negocios y Emprendimiento
@@ -387,11 +384,10 @@
                 @php
                     $columnClasses = 'col-md-4';
                     $imgHeight = '180px';
-                    // MODIFICACIÓN AQUÍ para $imgPath
                     if ($articulo->imagenUrl) {
                         $imgPath = Storage::disk('public')->url($articulo->imagenUrl);
                     } else {
-                        $imgPath = asset('assets/img/Logo1.jpeg'); // Placeholder
+                        $imgPath = asset('assets/img/Logo1.jpeg');
                     }
                 @endphp
                 <div class="{{ $columnClasses }} mb-4">
@@ -403,7 +399,12 @@
                             <h5 class="card-title h6">{{ $articulo->titulo }}</h5>
                             <span
                                 class="badge bg-primary mb-2 align-self-start">{{ $articulo->categoria ?? 'Negocios' }}</span>
-                            <p class="card-text small flex-grow-1">{{ $articulo->descripcion }}</p>
+                            {{-- MOSTRAR AUTOR --}}
+                            @if ($articulo->autor)
+                                <p class="card-text small text-muted mb-1"><i
+                                        class="fas fa-user fa-sm me-1"></i>{{ $articulo->autor->nombre }}</p>
+                            @endif
+                            <p class="card-text small flex-grow-1">{{ Str::limit($articulo->descripcion, 70) }}</p>
                             <div class="mt-auto text-end">
                                 <a href="{{ route('articulo.detalle', ['articulo' => $articulo->idArticulo]) }}"
                                     class="btn btn-outline-primary btn-sm">Leer más</a>
@@ -427,19 +428,28 @@
         <section id="nueva-noticia" class="my-5 p-4 bg-light rounded shadow-sm border">
             <div class="text-center mb-4"> <button class="btn btn-success" type="button" data-bs-toggle="collapse"
                     data-bs-target="#collapseNuevaNoticia"
-                    aria-expanded="{{ $errors->hasAny(['idSeccion', 'categoria', 'titulo', 'descripcion', 'imagenUrl', 'contenido']) ? 'true' : 'false' }}"
+                    aria-expanded="{{ $errors->hasAny(['idSeccion', 'categoria', 'titulo', 'descripcion', 'imagenUrl', 'contenido', 'imagenAlt', 'fechaPublicacion']) ? 'true' : 'false' }}"
                     aria-controls="collapseNuevaNoticia"> <i class="fas fa-plus me-1"></i> Agregar Nueva Noticia / Ocultar
                 </button> </div>
-            <div class="collapse {{ $errors->hasAny(['idSeccion', 'categoria', 'titulo', 'descripcion', 'imagenUrl', 'contenido']) ? 'show' : '' }}"
+            <div class="collapse {{ $errors->hasAny(['idSeccion', 'categoria', 'titulo', 'descripcion', 'imagenUrl', 'contenido', 'imagenAlt', 'fechaPublicacion']) ? 'show' : '' }}"
                 id="collapseNuevaNoticia">
                 <div class="row justify-content-center">
                     <div class="col-md-10 col-lg-8">
-                         {{-- Asegurarse que los nombres de error coincidan con los del form y validación --}}
-                        @if ($errors->any() && $errors->hasAny(['idSeccion', 'categoria', 'titulo', 'descripcion', 'imagenUrl', 'contenido', 'imagenAlt', 'fechaPublicacion']))
+                        @if (
+                            $errors->any() &&
+                                $errors->hasAny([
+                                    'idSeccion',
+                                    'categoria',
+                                    'titulo',
+                                    'descripcion',
+                                    'imagenUrl',
+                                    'contenido',
+                                    'imagenAlt',
+                                    'fechaPublicacion',
+                                ]))
                             <div class="alert alert-danger alert-dismissible fade show" role="alert"> <strong>Por favor
                                     corrige los siguientes errores:</strong>
                                 <ul>
-                                     {{-- Iterar sobre todos los errores para mostrarlos --}}
                                     @foreach ($errors->all() as $error)
                                         <li>{{ $error }}</li>
                                     @endforeach
@@ -447,14 +457,14 @@
                                     aria-label="Close"></button>
                             </div>
                         @endif
-                        {{-- Cambiado 'articulo.store' a 'articulos.store' si así está en tus rutas, o viceversa --}}
                         <form id="formulario-nueva-noticia" class="row g-3" method="POST"
-                            action="{{ route('articulos.store') }}" enctype="multipart/form-data"> @csrf
+                            action="{{ route('articulo.store') }}" enctype="multipart/form-data"> @csrf
                             <div class="col-md-6">
                                 <label for="news-section" class="form-label">Sección:</label>
-                                <select id="news-section" name="idSeccion" {{-- Cambiado name a idSeccion --}}
+                                <select id="news-section" name="idSeccion"
                                     class="form-select @error('idSeccion') is-invalid @enderror" required>
-                                    <option value="" disabled {{ old('idSeccion') ? '' : 'selected' }}>-- Selecciona una Sección --</option>
+                                    <option value="" disabled {{ old('idSeccion') ? '' : 'selected' }}>-- Selecciona una
+                                        Sección --</option>
                                     @isset($secciones)
                                         @foreach ($secciones as $seccion)
                                             <option value="{{ $seccion->idSeccion }}"
@@ -463,57 +473,54 @@
                                         @endforeach
                                     @endisset
                                 </select>
-                                @error('idSeccion') {{-- Cambiado a idSeccion --}}
+                                @error('idSeccion')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
                             <div class="col-md-6">
                                 <label for="news-category" class="form-label">Categoría (Opcional):</label>
-                                <input id="news-category" name="categoria" type="text" {{-- Cambiado name a categoria --}}
+                                <input id="news-category" name="categoria" type="text"
                                     class="form-control @error('categoria') is-invalid @enderror"
                                     placeholder="Ej: Política, IA, Fútbol" value="{{ old('categoria') }}">
-                                @error('categoria') {{-- Cambiado a categoria --}}
+                                @error('categoria')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
                             <div class="col-12">
                                 <label for="news-title" class="form-label">Título:</label>
-                                <input id="news-title" name="titulo" type="text" {{-- Cambiado name a titulo --}}
+                                <input id="news-title" name="titulo" type="text"
                                     class="form-control @error('titulo') is-invalid @enderror"
                                     placeholder="Título de la noticia" value="{{ old('titulo') }}" required>
-                                @error('titulo') {{-- Cambiado a titulo --}}
+                                @error('titulo')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
                             <div class="col-12">
                                 <label for="news-description" class="form-label">Descripción Breve:</label>
-                                <textarea id="news-description" name="descripcion" class="form-control @error('descripcion') is-invalid @enderror" {{-- Cambiado name a descripcion --}}
-                                    rows="3" placeholder="Descripción breve que aparecerá en la tarjeta y al inicio del artículo"
-                                    required>{{ old('descripcion') }}</textarea>
-                                @error('descripcion') {{-- Cambiado a descripcion --}}
+                                <textarea id="news-description" name="descripcion" class="form-control @error('descripcion') is-invalid @enderror"
+                                    rows="3" placeholder="Descripción breve que aparecerá en la tarjeta y al inicio del artículo" required>{{ old('descripcion') }}</textarea>
+                                @error('descripcion')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
                             <div class="col-12">
                                 <label for="news-contenido" class="form-label">Contenido Completo (Opcional):</label>
                                 <textarea id="news-contenido" name="contenido" class="form-control @error('contenido') is-invalid @enderror"
-                                    rows="6"
-                                    placeholder="Escribe aquí el cuerpo completo de la noticia.">{{ old('contenido') }}</textarea>
+                                    rows="6" placeholder="Escribe aquí el cuerpo completo de la noticia.">{{ old('contenido') }}</textarea>
                                 @error('contenido')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
                             <div class="col-md-6">
                                 <label for="news-imagen" class="form-label">Imagen de Portada (Opcional):</label>
-                                <input class="form-control @error('imagenUrl') is-invalid @enderror" {{-- Cambiado name a imagenUrl --}}
-                                    type="file" id="news-imagen" name="imagenUrl" {{-- Cambiado name a imagenUrl --}}
-                                    accept="image/jpeg,image/png,image/gif,image/webp">
-                                @error('imagenUrl') {{-- Cambiado a imagenUrl --}}
+                                <input class="form-control @error('imagenUrl') is-invalid @enderror" type="file"
+                                    id="news-imagen" name="imagenUrl" accept="image/jpeg,image/png,image/gif,image/webp">
+                                @error('imagenUrl')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                                 <div id="imagenHelp" class="form-text">Sube una imagen (JPG, PNG, GIF, WEBP). Máx 4MB.</div>
                             </div>
-                             <div class="col-md-6">
+                            <div class="col-md-6">
                                 <label for="news-imagenAlt" class="form-label">Texto Alternativo Imagen (Opcional):</label>
                                 <input id="news-imagenAlt" name="imagenAlt" type="text"
                                     class="form-control @error('imagenAlt') is-invalid @enderror"
@@ -532,8 +539,8 @@
                                 @enderror
                             </div>
                             <div class="col-12 text-end mt-3">
-                                <button type="submit" class="btn btn-success"> <i
-                                        class="fas fa-save me-1"></i> Guardar Noticia </button>
+                                <button type="submit" class="btn btn-success"> <i class="fas fa-save me-1"></i> Guardar
+                                    Noticia </button>
                             </div>
                         </form>
                     </div>

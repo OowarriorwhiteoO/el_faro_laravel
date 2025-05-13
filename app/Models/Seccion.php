@@ -8,26 +8,21 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * Modelo Eloquent para representar la tabla 'secciones'.
+ * Modelo Eloquent para representar la tabla 'seccions'.
  */
 class Seccion extends Model
 {
     // Habilita el uso de factories para este modelo.
     use HasFactory;
 
-    /**
-     * El nombre de la tabla asociada con el modelo.
-     *
-     * @var string
-     */
-    protected $table = 'secciones';
+    // protected $table = 'secciones'; // <--- LÍNEA ELIMINADA
 
     /**
      * La clave primaria asociada con la tabla.
      *
      * @var string
      */
-    protected $primaryKey = 'idSeccion';
+    protected $primaryKey = 'idSeccion'; // Esto está bien, ya que tu PK no es 'id'
 
     /**
      * Los atributos que se pueden asignar de forma masiva.
@@ -47,8 +42,6 @@ class Seccion extends Model
      */
     public function articulos(): HasMany
     {
-        // Especifica el modelo relacionado (Articulo), la clave foránea en la tabla 'articulos' ('idSeccion'),
-        // y la clave primaria en esta tabla ('secciones', 'idSeccion').
         return $this->hasMany(Articulo::class, 'idSeccion', 'idSeccion');
     }
 }

@@ -7,48 +7,47 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Ejecuta las migraciones para crear la tabla 'articulos'.
+     * Run the migrations.
      */
     public function up(): void
     {
-        // Define la estructura de la tabla 'articulos'.
         Schema::create('articulos', function (Blueprint $table) {
-            // Define la clave primaria autoincremental 'idArticulo'.
-            $table->id('idArticulo');
-            // Define la columna para el título del artículo.
+            $table->id('idArticulo'); // BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY
             $table->string('titulo');
-            // Define la columna para la descripción corta (permite nulos).
             $table->text('descripcion')->nullable();
-            // Define la columna para el contenido completo (permite nulos y texto largo).
             $table->longText('contenido')->nullable();
-            // Define la columna para la URL o nombre de archivo de la imagen (permite nulos).
             $table->string('imagenUrl')->nullable();
-            // Define la columna para el texto alternativo de la imagen (permite nulos).
             $table->string('imagenAlt')->nullable();
-            // Define la columna para la categoría específica (permite nulos).
-            $table->string('categoria')->nullable();
-            // Define la columna para la fecha de publicación (permite nulos).
+            $table->string('categoria')->nullable(); // ejemplo: 'Fútbol', 'Política Local'
             $table->date('fechaPublicacion')->nullable();
 
-            // Define la columna para la clave foránea 'idSeccion'.
-            $table->unsignedBigInteger('idSeccion');
-            // Establece la restricción de clave foránea hacia la tabla 'secciones'.
-            $table->foreign('idSeccion')
-                  ->references('idSeccion')->on('secciones')
-                  // Define que si se elimina una sección, sus artículos asociados también se eliminarán.
-                  ->onDelete('cascade');
+            // Definición de la columna para la clave foránea
+            $table->unsignedBigInteger('idSeccion'); // Tipo debe coincidir con la PK de seccions
+            // $table->unsignedBigInteger('idUsuario')->nullable(); // Para la autoría, lo añadiremos después
 
-            // Define las columnas estándar 'created_at' y 'updated_at'.
             $table->timestamps();
+
+            // Definición de la clave foránea
+            // Asegúrate que la tabla 'seccions' y su columna 'idSeccion' existan
+            // y que 'idSeccion' en 'seccions' sea una clave primaria o única.
+            $table->foreign('idSeccion')
+                  ->references('idSeccion')
+                  ->on('seccions') // Nombre de la tabla referenciada
+                  ->onDelete('cascade'); // Acción al eliminar una sección (ej: borrar artículos)
+                  // ->onDelete('set null'); // Otra opción si idSeccion puede ser nullable
+
+            // Si añadimos autoría:
+            // $table->foreign('idUsuario')
+            //       ->references('idUsuario')->on('usuarios')
+            //       ->onDelete('set null'); // o 'cascade' si quieres borrar los artículos del usuario
         });
     }
 
     /**
-     * Revierte las migraciones, eliminando la tabla 'articulos'.
+     * Reverse the migrations.
      */
     public function down(): void
     {
-        // Elimina la tabla 'articulos' si existe.
         Schema::dropIfExists('articulos');
     }
 };

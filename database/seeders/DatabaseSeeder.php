@@ -2,31 +2,39 @@
 
 namespace Database\Seeders;
 
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\Usuario; // <-- AÑADIR para crear el usuario admin
+use Illuminate\Support\Facades\Hash; // <-- AÑADIR para hashear la contraseña
 
-// Importa las clases de los seeders específicos que se ejecutarán.
-use Database\Seeders\SeccionSeeder;
-use Database\Seeders\ArticuloSeeder;
-
-/**
- * Seeder principal que orquesta la ejecución de otros seeders.
- */
 class DatabaseSeeder extends Seeder
 {
     /**
-     * Ejecuta los seeders definidos para poblar la base de datos.
-     * El orden de ejecución es importante si hay dependencias (ej: secciones antes que artículos).
+     * Seed the application's database.
      */
     public function run(): void
     {
-        // Llama al método run() de los seeders especificados en el array.
-        $this->call([
-            SeccionSeeder::class, // Ejecuta el seeder para poblar la tabla 'secciones'.
-            ArticuloSeeder::class, // Ejecuta el seeder para poblar la tabla 'articulos'.
-        ]);
+        $this->command->info('Iniciando Seeder Principal...');
 
-        // Muestra un mensaje informativo en la consola al finalizar.
+        // Crear/Actualizar Usuario Admin
+        Usuario::updateOrCreate(
+            ['email' => 'admin@elfaro.test'], // Criterio para buscar (email único)
+            [
+                'nombre' => 'Administrador El Faro',
+                'password' => Hash::make('Dale30albo'), // Hashear la contraseña
+                'role' => 'admin',
+                'email_verified_at' => now(), // Opcional: marcar como verificado
+            ]
+        );
+        $this->command->info('Usuario Admin creado/actualizado: admin@elfaro.test');
+
+        // Llama primero al Seeder de Secciones
+        $this->call(SeccionSeeder::class);
+        // $this->command->info('Seeder de Secciones ejecutado.'); // Ya lo tienes en SeccionSeeder
+
+        // Luego llama al Seeder de Artículos
+        $this->call(ArticuloSeeder::class);
+        // $this->command->info('Seeder de Artículos ejecutado.'); // Ya lo tienes en ArticuloSeeder
+
         $this->command->info('¡Todos los seeders principales han sido ejecutados!');
     }
 }
