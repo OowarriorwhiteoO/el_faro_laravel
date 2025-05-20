@@ -1,4 +1,4 @@
-# 📰 El Faro (Versión Laravel) - ¡Iluminando las Noticias! 💡
+# 📰 El Faro (Versión Laravel) - ¡Noticias! 💡
 
 ¡Bienvenido/a al repositorio del proyecto "El Faro"! Este no es un periódico cualquiera, es el resultado de una misión: ¡transformar un sitio de noticias estático en una aplicación web dinámica y moderna! Este proyecto fue desarrollado como parte del curso **Taller de Aplicaciones para Internet** del **Instituto Profesional AIEP**.
 
@@ -34,7 +34,7 @@ Este faro ahora ilumina con:
 
 ## 🚀 Puesta en Marcha Local (¡Para Probarlo!)
 
-¿Quieres ver El Faro brillar en tu propia máquina? Sigue estos pasos:
+¿Quieres ver El Faro en tu propia máquina? Sigue estos pasos:
 
 1.  **Clona el Repositorio:**
     ```bash

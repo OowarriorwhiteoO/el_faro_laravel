@@ -6,7 +6,11 @@
     <div class="container mt-4 mb-5">
         <h1 class="h3 mb-4 text-center">
             {{ $tituloSeccion }}
+<<<<<<< HEAD
             {{-- CORRECCIÓN AQUÍ: Usar count() en lugar de total() --}}
+=======
+            {{-- Usar count() en lugar de total() --}}
+>>>>>>> 9f99c68cadc2b1654bfd2fb3d45946636c0b8260
             <span class="badge bg-secondary fw-normal">{{ $articulos->count() }}
                 articulo{{ $articulos->count() !== 1 ? 's' : '' }}</span>
         </h1>

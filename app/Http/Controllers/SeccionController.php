@@ -31,6 +31,7 @@ class SeccionController extends Controller
             // Nuestro SP devuelve 'nombreAutor' directamente, así que la hidratación
             // nos sirve para tratar los objetos como instancias de Articulo, aunque no usaremos ->autor.
             $articulos = Articulo::hydrate($articulosArray);
+<<<<<<< HEAD
 
             // Si necesitas paginación, tendrás que implementarla manualmente con hydrate:
             // $currentPage = \Illuminate\Pagination\Paginator::resolveCurrentPage();
@@ -39,6 +40,8 @@ class SeccionController extends Controller
             // $articulosPaginados = new \Illuminate\Pagination\LengthAwarePaginator($currentPageItems, count($articulos), $perPage, $currentPage, [
             //     'path' => \Illuminate\Pagination\Paginator::resolveCurrentPath(),
             // ]);
+=======
+>>>>>>> 9f99c68cadc2b1654bfd2fb3d45946636c0b8260
 
 
             return view('seccion.mostrar', [
