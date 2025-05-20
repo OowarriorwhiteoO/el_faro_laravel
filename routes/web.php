@@ -11,6 +11,8 @@ use App\Http\Controllers\ArticuloController;
 use App\Http\Controllers\PaginaEstaticaController;
 use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\UsuarioController;
+use App\Http\Controllers\MultimediaController;
+use App\Http\Controllers\PodcastController;
 // use App\Models\Articulo; // No necesitas importar modelos en el archivo de rutas generalmente
 
 /*
@@ -71,3 +73,6 @@ Route::get('/perfil', [PerfilController::class, 'index'])->middleware('auth')->n
 
 // --- RUTA LISTADO DE USUARIOS ---
 Route::get('/usuarios', [UsuarioController::class, 'index'])->name('usuarios.index');
+
+Route::get('/multimedia', [MultimediaController::class, 'index'])->name('multimedia.index');
+Route::get('/podcast', [PodcastController::class, 'index'])->name('podcast.index');

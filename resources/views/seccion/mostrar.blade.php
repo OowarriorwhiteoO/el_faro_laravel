@@ -6,8 +6,9 @@
     <div class="container mt-4 mb-5">
         <h1 class="h3 mb-4 text-center">
             {{ $tituloSeccion }}
-            <span class="badge bg-secondary fw-normal">{{ $articulos->total() }}
-                articulo{{ $articulos->total() !== 1 ? 's' : '' }}</span>
+            {{-- CORRECCIÓN AQUÍ: Usar count() en lugar de total() --}}
+            <span class="badge bg-secondary fw-normal">{{ $articulos->count() }}
+                articulo{{ $articulos->count() !== 1 ? 's' : '' }}</span>
         </h1>
 
         <div id="articles-container-{{ $slugSeccion }}" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
@@ -16,7 +17,11 @@
                     $fecha = 'Fecha no disponible';
                     if (!empty($articulo->fechaPublicacion)) {
                         try {
-                            $fechaPublicacionObj = \Carbon\Carbon::parse($articulo->fechaPublicacion);
+                            // Asegurarse que fechaPublicacion sea un objeto Carbon si viene del SP como string
+                            $fechaPublicacionObj =
+                                $articulo->fechaPublicacion instanceof \Carbon\Carbon
+                                    ? $articulo->fechaPublicacion
+                                    : \Carbon\Carbon::parse($articulo->fechaPublicacion);
                             $meses = [
                                 'enero',
                                 'febrero',
@@ -44,10 +49,13 @@
                             );
                         }
                     }
+
+                    // Para el nombre del autor, el SP ya lo devuelve como 'nombreAutor'
+                    $nombreDelAutor = $articulo->nombreAutor ?? null;
                 @endphp
 
                 <div class="col">
-                    <article id="article-{{ $slugSeccion }}-{{ $articulo->idArticulo }}"
+                    <article id="article-{{ $slugSeccion }}-{{ $articulo->idArticulo ?? $loop->index }}"
                         class="card h-100 shadow-sm article-card">
                         @if ($articulo->imagenUrl)
                             <img src="{{ Storage::disk('public')->url($articulo->imagenUrl) }}"
@@ -58,7 +66,8 @@
                         @endif
                         <div class="card-body d-flex flex-column">
                             <h5 class="card-title">
-                                <a href="{{ route('articulo.detalle', ['articulo' => $articulo->idArticulo]) }}"
+                                {{-- Asumiendo que idArticulo está presente en los datos del SP --}}
+                                <a href="{{ route('articulo.detalle', ['articulo' => $articulo->idArticulo ?? 0]) }}"
                                     class="text-decoration-none stretched-link">
                                     {{ $articulo->titulo }}
                                 </a>
@@ -69,16 +78,17 @@
                                     | <span class="badge bg-info text-dark">{{ $articulo->categoria }}</span>
                                 @endif
                             </p>
-                            {{-- MOSTRAR AUTOR AQUÍ --}}
-                            @if ($articulo->autor)
+                            {{-- MOSTRAR AUTOR AQUÍ (usando la columna nombreAutor del SP) --}}
+                            @if ($nombreDelAutor)
                                 <p class="card-text small text-muted mb-1"><i
-                                        class="fas fa-user fa-sm me-1"></i>{{ $articulo->autor->nombre }}</p>
+                                        class="fas fa-user fa-sm me-1"></i>{{ $nombreDelAutor }}</p>
                             @else
                                 {{-- Opcional: si quieres mostrar algo si no hay autor --}}
                                 {{-- <p class="card-text small text-muted mb-1"><i class="fas fa-user-slash fa-sm me-1"></i>Autor no disponible</p> --}}
                             @endif
                             <p class="card-text flex-grow-1">{{ Str::limit($articulo->descripcion, 100) }}</p>
-                            <a href="{{ route('articulo.detalle', ['articulo' => $articulo->idArticulo]) }}"
+                            {{-- Asumiendo que idArticulo está presente en los datos del SP --}}
+                            <a href="{{ route('articulo.detalle', ['articulo' => $articulo->idArticulo ?? 0]) }}"
                                 class="btn btn-primary btn-sm mt-auto align-self-start">Leer Más</a>
                         </div>
                     </article>
@@ -90,9 +100,13 @@
             @endforelse
         </div>
 
+        {{-- La paginación estándar de Laravel no funcionará directamente aquí con DB::select() --}}
+        {{-- Si usaste la paginación manual en el controlador, aquí llamarías a $articulosPaginados->links() --}}
+        {{-- Por ahora, como no implementamos paginación manual en el controlador para DB::select, comentamos esto:
         <div class="mt-4 d-flex justify-content-center">
             {{ $articulos->links() }}
         </div>
+        --}}
     </div>
 @endsection
 

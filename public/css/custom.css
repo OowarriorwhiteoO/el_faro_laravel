@@ -1,71 +1,710 @@
-/* --- Efecto Hover para Tarjetas/Artículos de Noticias --- */
+/* =====================
+   SISTEMA DE TEMAS SIMPLE Y LIMPIO
+   ===================== */
 
-/* Clase base para la transición y cursor en tarjetas de noticias */
-.news-card {
-    transition: all 0.3s ease-in-out; /* Transición suave para todos los cambios */
-    cursor: pointer; /* Cursor interactivo */
+/* Tema Claro (por defecto) */
+body.theme-light {
+    --bg: #f8f9fa;
+    --text: #212529;
+    --link: #0d6efd;
+    --link-hover: #0a58ca;
+    --card-bg: #fff;
+    --btn-bg: #0d6efd;
+    --btn-text: #fff;
 }
 
-/* Estilos aplicados al pasar el cursor sobre la tarjeta */
-.news-card:hover {
-    background-color: #212529 !important; /* Fondo oscuro (Bootstrap dark) */
-    color: #f8f9fa !important;           /* Texto claro (Bootstrap light) */
-    transform: translateY(-6px);         /* Efecto de elevación */
-    box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.2) !important; /* Sombra más pronunciada */
+/* Tema Oscuro */
+body.theme-dark {
+    --bg: #181a1b;
+    --text: #f1f1f1;
+    --link: #58a6ff;
+    --link-hover: #80baff;
+    --card-bg: #23272b;
+    --btn-bg: #222b45;
+    --btn-text: #fff;
 }
 
-/* Ajuste de color de texto para elementos internos en estado hover */
-.news-card:hover .card-title,
-.news-card:hover .card-text,
-.news-card:hover h2,
-.news-card:hover p,
-.news-card:hover .small,
-.news-card:hover .lead {
-    color: #f8f9fa !important; /* Texto claro */
+/* Tema Alto Contraste */
+body.theme-high-contrast {
+    --bg: #000;
+    --text: #fff;
+    --link: #0ff;
+    --link-hover: #ff0;
+    --card-bg: #000;
+    --btn-bg: #ff0;
+    --btn-text: #000;
 }
 
-/* Ajuste de estilo para badges dentro de la tarjeta en estado hover */
-.news-card:hover .badge {
-    background-color: #f8f9fa !important; /* Fondo claro */
-    color: #212529 !important;           /* Texto oscuro */
-    border: 1px solid #dee2e6;         /* Borde sutil */
+/* =====================
+   APLICACIÓN DE VARIABLES A ELEMENTOS
+   ===================== */
+body {
+    background: var(--bg) !important;
+    color: var(--text) !important;
+    transition: background 0.2s, color 0.2s;
+}
+.card, .bg-light, .navbar, .footer {
+    background: var(--card-bg) !important;
+    color: var(--text) !important;
+}
+.dropdown-menu {
+    background-color: var(--card-bg) !important;
+    color: var(--text) !important;
+    border: 1px solid var(--link) !important;
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
+}
+a, .nav-link, .dropdown-item {
+    color: var(--link) !important;
+}
+a:hover, .nav-link:hover, .dropdown-item:hover {
+    color: var(--link-hover) !important;
+}
+.btn-primary, .btn-secondary {
+    background: var(--btn-bg) !important;
+    color: var(--btn-text) !important;
+    border: none;
+}
+input, textarea, select {
+    background: var(--card-bg) !important;
+    color: var(--text) !important;
+    border: 1px solid var(--link) !important;
+}
+/* Footer */
+.footer, #footer {
+    background: var(--card-bg) !important;
+    color: var(--text) !important;
 }
 
-/* Ajuste de estilo para botones outline-primary dentro de la tarjeta en estado hover */
-.news-card:hover .btn-outline-primary {
-    background-color: #f8f9fa;          /* Fondo claro */
-    color: #0d6efd;                     /* Texto primario Bootstrap */
-    border-color: #f8f9fa;              /* Borde claro */
+
+/* --- Tema Oscuro --- */
+body.theme-dark {
+    --theme-bg-color: #1a1a1a;
+    --theme-text-color: #e0e0e0;
+    --theme-card-bg-color: #2c2c2c;
+    --theme-card-border-color: #444444;
+    --theme-navbar-bg-color: #212529;
+    --theme-navbar-text-color: #f8f9fa;
+    --theme-navbar-active-bg-color: #343a40;
+    --theme-navbar-active-text-color: #ffc107;
+    --theme-link-color: #66b2ff;
+    --theme-link-hover-color: #90cdf4;
+    --theme-button-primary-bg-color: #343a40;
+    --theme-button-primary-text-color: #ffc107;
+    --theme-button-secondary-bg-color: #495057;
+    --theme-button-secondary-text-color: #fff;
+    --theme-footer-bg-color: #181818;
+    --theme-footer-text-color: #f8f9fa;
+    --theme-footer-link-color: #ffc107;
+    --theme-footer-heading-color: #ffe066;
+    --theme-border-color: #444444;
+    --theme-muted-text-color: #b0b0b0;
+    --theme-input-bg-color: #23272b;
+    --theme-input-border-color: #444;
+    --theme-input-text-color: #e0e0e0;
+    --theme-success-bg-color: #234d20;
+    --theme-success-text-color: #b7ffb0;
+    --theme-danger-bg-color: #5a1a1a;
+    --theme-danger-text-color: #ffb0b0;
+    --theme-primary-color: #ffc107;
+    --theme-secondary-color: #adb5bd;
+    --theme-shadow-color: rgba(0,0,0,0.8);
+    --theme-toggler-icon-filter: invert(1);
+    --theme-btn-close-filter: invert(1);
 }
 
-/* Ajuste de estilo para botones primary dentro de la tarjeta en estado hover */
-.news-card:hover .btn-primary {
-    background-color: #f8f9fa;
-    color: #0d6efd;
-    border-color: #f8f9fa;
+body.theme-dark, body.theme-dark .bg-light, body.theme-dark .card, body.theme-dark .navbar, body.theme-dark .dropdown-menu {
+    background-color: var(--theme-bg-color) !important;
+    color: var(--theme-text-color) !important;
+}
+body.theme-dark .navbar {
+    background-color: var(--theme-navbar-bg-color) !important;
+    color: var(--theme-navbar-text-color) !important;
+}
+body.theme-dark .navbar .nav-link, body.theme-dark .navbar-brand {
+    color: var(--theme-navbar-text-color) !important;
+}
+body.theme-dark .navbar .nav-link.active {
+    background-color: var(--theme-navbar-active-bg-color) !important;
+    color: var(--theme-navbar-active-text-color) !important;
+}
+body.theme-dark a {
+    color: var(--theme-link-color) !important;
+}
+body.theme-dark a:hover {
+    color: var(--theme-link-hover-color) !important;
+}
+body.theme-dark .btn-primary {
+    background-color: var(--theme-button-primary-bg-color) !important;
+    color: var(--theme-button-primary-text-color) !important;
+    border-color: var(--theme-button-primary-bg-color) !important;
+}
+body.theme-dark .btn-secondary {
+    background-color: var(--theme-button-secondary-bg-color) !important;
+    color: var(--theme-button-secondary-text-color) !important;
+    border-color: var(--theme-button-secondary-bg-color) !important;
+}
+body.theme-dark .card {
+    background-color: var(--theme-card-bg-color) !important;
+    color: var(--theme-text-color) !important;
+    border-color: var(--theme-card-border-color) !important;
+}
+body.theme-dark .dropdown-menu {
+    background-color: var(--theme-card-bg-color) !important;
+    color: var(--theme-text-color) !important;
+    border-color: var(--theme-card-border-color) !important;
+}
+body.theme-dark .form-control {
+    background-color: var(--theme-input-bg-color) !important;
+    color: var(--theme-input-text-color) !important;
+    border-color: var(--theme-input-border-color) !important;
+}
+body.theme-dark .form-control::placeholder {
+    color: var(--theme-muted-text-color) !important;
+}
+body.theme-dark .footer {
+    background-color: var(--theme-footer-bg-color) !important;
+    color: var(--theme-footer-text-color) !important;
+}
+body.theme-dark .footer a {
+    color: var(--theme-footer-link-color) !important;
+}
+body.theme-dark .footer h5, body.theme-dark .footer .heading {
+    color: var(--theme-footer-heading-color) !important;
+}
+body.theme-dark .alert-success {
+    background-color: var(--theme-success-bg-color) !important;
+    color: var(--theme-success-text-color) !important;
+}
+body.theme-dark .alert-danger {
+    background-color: var(--theme-danger-bg-color) !important;
+    color: var(--theme-danger-text-color) !important;
+}
+body.theme-dark hr {
+    border-color: var(--theme-border-color) !important;
+}
+body.theme-dark .text-muted {
+    color: var(--theme-muted-text-color) !important;
+}
+body.theme-dark .shadow {
+    box-shadow: 0 0.5rem 1rem var(--theme-shadow-color) !important;
+}
+body.theme-dark .btn-close {
+    filter: var(--theme-btn-close-filter) !important;
+}
+body.theme-dark .navbar-toggler-icon {
+    filter: var(--theme-toggler-icon-filter) !important;
 }
 
-/* Ajuste de opacidad para la imagen dentro de la tarjeta en estado hover */
-.news-card:hover img {
-    opacity: 0.95; /* Leve opacidad */
+body.theme-dark {
+    --theme-navbar-text-color: #e0e0e0;
+    --theme-navbar-hover-bg-color: #495057;
+    --theme-navbar-hover-text-color: #ffffff;
+    --theme-navbar-active-bg-color: #0d6efd;
+    --theme-navbar-active-text-color: #ffffff;
+    --theme-link-color: #58a6ff;
+    --theme-link-hover-color: #80baff;
+    --theme-button-primary-bg-color: #0d6efd;
+    --theme-button-primary-text-color: #ffffff;
+    --theme-button-secondary-bg-color: #545b62;
+    --theme-button-secondary-text-color: #ffffff;
+    /* Footer se mantiene como en el tema claro/default según tu especificación */
+    /* Si quisieras que el footer cambie en modo oscuro, descomenta y ajusta estas:
+    --theme-footer-bg-color: #111111;
+    --theme-footer-text-color: #cccccc;
+    --theme-footer-link-color: #999999;
+    --theme-footer-heading-color: #bb86fc; // Un morado como ejemplo para títulos
+    */
+    --theme-border-color: #555555;
+    --theme-muted-text-color: #9e9e9e;
+    --theme-input-bg-color: #2c2c2c;
+    --theme-input-border-color: #555555;
+    --theme-input-text-color: #e0e0e0;
+    --theme-success-bg-color: #0f5132;
+    --theme-success-text-color: #d1e7dd;
+    --theme-danger-bg-color: #842029;
+    --theme-danger-text-color: #f8d7da;
+    --theme-primary-color: #58a6ff;
+    --theme-secondary-color: #9e9e9e;
+    --theme-shadow-color: rgba(255, 255, 255, 0.05);
+    --theme-toggler-icon-filter: invert(1) grayscale(100%) brightness(200%); /* Para hacer el ícono del toggler blanco */
+    --theme-btn-close-filter: invert(1) grayscale(100%) brightness(200%); /* Para el botón de cerrar alertas */
 }
 
-/* Elimina el subrayado de enlaces dentro de la tarjeta en estado hover */
-.news-card:hover a {
-    text-decoration: none;
+/* --- Tema Alto Contraste --- */
+body.theme-high-contrast {
+    --theme-bg-color: #000000;
+    --theme-text-color: #ffffff;
+    --theme-card-bg-color: #000000;
+    --theme-card-border-color: #00ffff; /* Cian */
+    --theme-navbar-bg-color: #000000;
+    --theme-navbar-text-color: #ffffff;
+    --theme-navbar-hover-bg-color: #00ffff; /* Cian */
+    --theme-navbar-hover-text-color: #000000; /* Texto negro sobre cian */
+    --theme-navbar-active-bg-color: #ffff00; /* Amarillo */
+    --theme-navbar-active-text-color: #000000; /* Texto negro sobre amarillo */
+    --theme-link-color: #ffff00; /* Amarillo */
+    --theme-link-hover-color: #00ffff; /* Cian al pasar el mouse */
+    --theme-button-primary-bg-color: #000000;
+    --theme-button-primary-text-color: #ffff00; /* Texto amarillo */
+    --theme-button-primary-border-color: #ffff00; /* Borde amarillo */
+    --theme-button-secondary-bg-color: #000000;
+    --theme-button-secondary-text-color: #00ffff; /* Texto cian */
+    --theme-button-secondary-border-color: #00ffff; /* Borde cian */
+    --theme-footer-bg-color: #000000; /* Footer SÍ cambia en alto contraste */
+    --theme-footer-text-color: #ffffff;
+    --theme-footer-link-color: #ffff00; /* Amarillo para enlaces de footer */
+    --theme-footer-heading-color: #00ffff; /* Cian para títulos de footer */
+    --theme-border-color: #00ffff; /* Cian */
+    --theme-muted-text-color: #00ff00; /* Verde lima para texto secundario */
+    --theme-input-bg-color: #000000;
+    --theme-input-border-color: #00ffff;
+    --theme-input-text-color: #ffffff;
+    --theme-success-bg-color: #000000;
+    --theme-success-text-color: #00ff00; /* Verde para éxito */
+    --theme-danger-bg-color: #000000;
+    --theme-danger-text-color: #ff0000; /* Rojo para alerta */
+    --theme-primary-color: #ffff00; /* Amarillo */
+    --theme-secondary-color: #00ffff; /* Cian */
+    --theme-shadow-color: transparent;
+    --theme-toggler-icon-filter: none; /* Se usará SVG personalizado */
+    --theme-btn-close-filter: none; /* Se usará SVG personalizado */
 }
 
-/* === Estilos Hover para el Menú de Navegación Principal === */
-
-/* Estilos base para transición, bordes y margen en enlaces de navegación */
-.navbar-nav .nav-link {
-    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
-    border-radius: 0.25rem;
-    margin: 0 0.25rem;
+/* --- Aplicación General de los Colores del Tema --- */
+body {
+    background-color: var(--theme-bg-color);
+    color: var(--theme-text-color);
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Estilos aplicados al pasar el mouse sobre enlaces de navegación no activos */
+a {
+    color: var(--theme-link-color);
+}
+a:hover {
+    color: var(--theme-link-hover-color);
+}
+
+/* Encabezado y Barra de Navegación */
+header.container-fluid { /* El que tiene la clase bg-light */
+    background-color: var(--theme-navbar-bg-color) !important;
+    color: var(--theme-navbar-text-color);
+}
+header.container-fluid h1, header.container-fluid #label-time {
+    color: var(--theme-navbar-text-color);
+}
+/* Logo en header - asegurar contraste */
+body.theme-dark header.container-fluid .logo,
+body.theme-high-contrast header.container-fluid .logo {
+    background-color: #fff; /* Fondo blanco para el logo en temas oscuros/contraste si es necesario */
+    padding: 5px;
+    border-radius: 5px;
+}
+body.theme-light header.container-fluid .logo {
+    background-color: transparent; /* Sin fondo extra en tema claro */
+    padding: 0;
+}
+
+
+.navbar { /* La barra de nav con bg-body-tertiary */
+    background-color: var(--theme-navbar-bg-color) !important;
+    border-top: 1px solid var(--theme-border-color) !important;
+    border-bottom: 1px solid var(--theme-border-color) !important;
+}
+.navbar .nav-link {
+    color: var(--theme-navbar-text-color) !important;
+}
+/* Hover para links de la navbar: usa el tuyo original como base */
 .navbar-nav .nav-link:not(.active):hover {
-    background-color: #8387c2b0; /* Fondo color personalizado */
-    color: #0d6efd; /* Texto primario Bootstrap */
+    background-color: var(--theme-navbar-hover-bg-color) !important;
+    color: var(--theme-navbar-hover-text-color) !important;
+}
+.navbar .nav-link.active {
+    background-color: var(--theme-navbar-active-bg-color) !important;
+    color: var(--theme-navbar-active-text-color) !important;
+}
+
+.navbar-toggler .navbar-toggler-icon {
+    filter: var(--theme-toggler-icon-filter);
+}
+body.theme-high-contrast .navbar-toggler .navbar-toggler-icon {
+     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgb(0, 255, 255)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
+}
+
+
+/* Tarjetas */
+.card {
+    background-color: var(--theme-card-bg-color);
+    color: var(--theme-text-color);
+    border: 1px solid var(--theme-card-border-color);
+    box-shadow: 0 0.25rem 0.75rem var(--theme-shadow-color);
+}
+.card .card-title, .card .card-text, .card .h1, .card .h2, .card .h3, .card .h4, .card .h5, .card .h6, .card p,
+.card .small { /* Añadido .small aquí para texto dentro de tarjetas */
+    color: var(--theme-text-color) !important; /* !important para asegurar anulación */
+}
+.card .text-muted {
+    color: var(--theme-muted-text-color) !important;
+}
+
+/* Botones */
+.btn-primary {
+    background-color: var(--theme-button-primary-bg-color);
+    border-color: var(--theme-button-primary-bg-color);
+    color: var(--theme-button-primary-text-color) !important; /* !important para el texto */
+}
+.btn-primary:hover {
+    opacity: 0.85; /* O un color de hover más específico si se prefiere */
+    color: var(--theme-button-primary-text-color) !important;
+}
+body.theme-high-contrast .btn-primary {
+    border: 2px solid var(--theme-button-primary-border-color, var(--theme-button-primary-bg-color));
+    color: var(--theme-button-primary-text-color) !important;
+}
+
+.btn-outline-primary {
+    color: var(--theme-link-color);
+    border-color: var(--theme-link-color);
+}
+.btn-outline-primary:hover {
+    background-color: var(--theme-link-color);
+    color: var(--theme-bg-color); /* Texto que contraste con el fondo del botón */
+}
+body.theme-high-contrast .btn-outline-primary {
+    color: var(--theme-link-color);
+    border-color: var(--theme-link-color);
+}
+ body.theme-high-contrast .btn-outline-primary:hover {
+    background-color: var(--theme-link-color);
+    color: var(--theme-bg-color); /* Será negro sobre amarillo/cian */
+}
+
+.btn-secondary {
+    background-color: var(--theme-button-secondary-bg-color);
+    border-color: var(--theme-button-secondary-bg-color);
+    color: var(--theme-button-secondary-text-color) !important;
+}
+body.theme-high-contrast .btn-secondary {
+    border: 2px solid var(--theme-button-secondary-border-color, var(--theme-button-secondary-bg-color));
+    color: var(--theme-button-secondary-text-color) !important;
+}
+
+.btn-success {
+    background-color: var(--theme-success-bg-color);
+    color: var(--theme-success-text-color) !important;
+    border-color: var(--theme-success-bg-color);
+}
+body.theme-dark .btn-success {
+    background-color: var(--theme-success-text-color); /* Color de texto como fondo */
+    color: var(--theme-success-bg-color) !important; /* Color de fondo como texto */
+    border-color: var(--theme-success-text-color);
+}
+body.theme-high-contrast .btn-success {
+    background-color: transparent;
+    color: var(--theme-success-text-color) !important;
+    border: 2px solid var(--theme-success-text-color);
+}
+
+.btn-danger {
+    background-color: var(--theme-danger-bg-color);
+    color: var(--theme-danger-text-color) !important;
+    border-color: var(--theme-danger-bg-color);
+}
+body.theme-dark .btn-danger {
+    background-color: var(--theme-danger-text-color);
+    color: var(--theme-danger-bg-color) !important;
+    border-color: var(--theme-danger-text-color);
+}
+ body.theme-high-contrast .btn-danger {
+    background-color: transparent;
+    color: var(--theme-danger-text-color) !important;
+    border: 2px solid var(--theme-danger-text-color);
+}
+
+/* Formularios */
+.form-control, .form-select {
+    background-color: var(--theme-input-bg-color);
+    color: var(--theme-input-text-color);
+    border: 1px solid var(--theme-input-border-color);
+}
+.form-control:focus, .form-select:focus {
+    background-color: var(--theme-input-bg-color);
+    color: var(--theme-input-text-color);
+    border-color: var(--theme-link-color);
+    box-shadow: 0 0 0 0.25rem rgba(var(--theme-primary-color-rgb, 13, 110, 253), 0.25); /* Necesitaríamos --theme-primary-color-rgb */
+}
+body.theme-high-contrast .form-control:focus, body.theme-high-contrast .form-select:focus {
+    box-shadow: 0 0 0 0.25rem rgba(255, 255, 0, 0.35); /* Sombra amarilla para alto contraste */
+}
+.form-label {
+    color: var(--theme-text-color);
+}
+/* Placeholder text color for inputs */
+.form-control::placeholder {
+    color: var(--theme-muted-text-color);
+    opacity: 0.7;
+}
+body.theme-dark .form-control::placeholder {
+    color: var(--theme-muted-text-color);
+    opacity: 0.5;
+}
+body.theme-high-contrast .form-control::placeholder {
+    color: var(--theme-muted-text-color); /* Verde lima */
+    opacity: 1;
+}
+
+
+/* Alertas de Bootstrap */
+.alert {
+    border-width: 1px;
+    border-style: solid;
+}
+.alert-success {
+    background-color: var(--theme-success-bg-color);
+    color: var(--theme-success-text-color);
+    border-color: var(--theme-success-text-color);
+}
+.alert-danger {
+    background-color: var(--theme-danger-bg-color);
+    color: var(--theme-danger-text-color);
+    border-color: var(--theme-danger-text-color);
+}
+.alert .btn-close {
+     filter: var(--theme-btn-close-filter);
+}
+body.theme-high-contrast .alert .btn-close {
+    background: transparent url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='rgb(0,255,255)'%3e%3cpath d='M.293.293a1 1 0 011.414 0L8 6.586 14.293.293a1 1 0 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586 8 .293 1.707a1 1 0 010-1.414z'/%3e%3c/svg%3e") center/1em auto no-repeat !important;
+}
+
+
+/* Pie de página */
+#footer {
+    background-color: var(--theme-footer-bg-color) !important;
+    color: var(--theme-footer-text-color) !important;
+}
+#footer h5, #footer h6 {
+    color: var(--theme-footer-heading-color) !important;
+}
+#footer p, #footer .small { /* Incluyendo .small para el copyright */
+    color: var(--theme-footer-text-color) !important;
+}
+/* Específicos para text-white-50 en modo claro y oscuro del footer */
+body.theme-light #footer .text-white-50,
+body.theme-dark #footer .text-white-50 {
+    color: var(--theme-footer-link-color) !important; /* Usa la variable de link del footer */
+}
+body.theme-high-contrast #footer p, body.theme-high-contrast #footer .small {
+    color: var(--theme-footer-text-color) !important; /* Texto blanco en alto contraste */
+}
+
+#footer a.nav-link, #footer a:not(.btn) {
+    color: var(--theme-footer-link-color) !important;
+}
+#footer a.nav-link:hover, #footer a:not(.btn):hover {
+    color: var(--theme-footer-text-color) !important; /* O un color de hover específico para links de footer */
+    opacity: 1;
+}
+body.theme-high-contrast #footer a.nav-link:hover, body.theme-high-contrast #footer a:not(.btn):hover {
+    color: var(--theme-link-hover-color) !important; /* Cian */
+}
+
+
+/* Clases específicas de Bootstrap que necesitan anulación */
+/* Asegúrate de que las clases bg-light que no sean header también tomen el color */
+body:not(.theme-high-contrast) .bg-light {
+    background-color: var(--theme-navbar-bg-color) !important;
+    color: var(--theme-text-color); /* El color de texto debería ser el del tema */
+}
+body.theme-high-contrast .bg-light { /* Cómo se ve .bg-light en alto contraste */
+    background-color: var(--theme-bg-color) !important; /* Fondo principal negro */
+    color: var(--theme-text-color) !important; /* Texto blanco */
+    border: 1px solid var(--theme-border-color); /* Borde cian */
+}
+
+.bg-body-tertiary { /* Para la navbar */
+    background-color: var(--theme-navbar-bg-color) !important;
+}
+.border-bottom, .border-top { /* Bordes generales */
+    border-color: var(--theme-border-color) !important;
+}
+.text-muted {
+    color: var(--theme-muted-text-color) !important;
+}
+
+/* Dropdown Menus (incluido el de temas y el de usuario) */
+.dropdown-menu {
+    background-color: var(--theme-card-bg-color); /* Usar fondo de tarjeta para consistencia */
+    border: 1px solid var(--theme-card-border-color);
+    box-shadow: 0 0.5rem 1rem var(--theme-shadow-color);
+}
+.dropdown-item {
+    color: var(--theme-text-color);
+}
+.dropdown-item:hover, .dropdown-item:focus {
+    color: var(--theme-navbar-hover-text-color); /* Mismos colores que hover de nav-link */
+    background-color: var(--theme-navbar-hover-bg-color);
+}
+.dropdown-item.active, .dropdown-item:active { /* Estilo para item activo si lo hubiera */
+    color: var(--theme-navbar-active-text-color);
+    background-color: var(--theme-navbar-active-bg-color);
+}
+.dropdown-divider {
+    border-top-color: var(--theme-border-color); /* Usa el color de borde del tema */
+    opacity: 0.25;
+}
+body.theme-high-contrast .dropdown-divider {
+    opacity: 1; /* Divisores más visibles en alto contraste */
+}
+
+/* === Ajustes para tus estilos .news-card:hover existentes === */
+/* Estos estilos se añadirán a los ya existentes, por lo que hay que
+   asegurar que las variables de color se apliquen correctamente o
+   definir cómo se comportará el hover en cada tema. */
+
+/* Opción: Adaptar el hover de news-card a cada tema */
+/* El :hover base que tienes:
+.news-card:hover {
+    background-color: #212529 !important;
+    color: #f8f9fa !important;
+    transform: translateY(-6px);
+    box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.2) !important;
+}
+.news-card:hover .card-title, ... { color: #f8f9fa !important; }
+.news-card:hover .badge { background-color: #f8f9fa !important; color: #212529 !important; }
+.news-card:hover .btn-outline-primary { background-color: #f8f9fa; color: #0d6efd; }
+*/
+
+/* Hover de News Card para TEMA CLARO (ya lo tienes, lo dejamos para referencia) */
+/* No necesitamos redefinirlo aquí si ya está en tu custom.css y funciona para el modo claro */
+
+/* Hover de News Card para TEMA OSCURO */
+body.theme-dark .news-card:hover {
+    background-color: #3c3c3c !important; /* Un poco más claro que el fondo de la tarjeta oscura */
+    color: #f0f0f0 !important;
+    transform: translateY(-6px); /* Mantenemos efecto elevación */
+    box-shadow: 0 0.75rem 1.5rem rgba(255, 255, 255, 0.1) !important; /* Sombra clara */
+}
+body.theme-dark .news-card:hover .card-title,
+body.theme-dark .news-card:hover .card-text,
+body.theme-dark .news-card:hover .small,
+body.theme-dark .news-card:hover .badge { /* Combinamos reglas */
+    color: #f0f0f0 !important;
+}
+body.theme-dark .news-card:hover .badge {
+    background-color: var(--theme-link-color) !important; /* Usar el color de link del tema oscuro */
+    color: var(--theme-card-bg-color) !important; /* Texto que contraste */
+    border: 1px solid var(--theme-link-color);
+}
+body.theme-dark .news-card:hover .btn-outline-primary {
+    background-color: var(--theme-link-color);
+    color: var(--theme-card-bg-color); /* Texto que contraste */
+    border-color: var(--theme-link-color);
+}
+
+/* Hover de News Card para TEMA ALTO CONTRASTE */
+body.theme-high-contrast .news-card:hover {
+    background-color: #000000 !important; /* Mantenemos fondo negro */
+    color: #ffffff !important;
+    border: 2px solid var(--theme-link-hover-color) !important; /* Borde cian al hacer hover (link-hover-color) */
+    transform: translateY(-6px);
+    box-shadow: none !important; /* Sin sombra en alto contraste */
+}
+body.theme-high-contrast .news-card:hover .card-title,
+body.theme-high-contrast .news-card:hover .card-text,
+body.theme-high-contrast .news-card:hover .small {
+    color: #ffffff !important;
+}
+body.theme-high-contrast .news-card:hover .badge {
+    background-color: var(--theme-link-color) !important; /* Amarillo */
+    color: #000000 !important; /* Texto negro */
+    border: 1px solid #000000;
+}
+body.theme-high-contrast .news-card:hover .btn-outline-primary {
+    background-color: var(--theme-link-color); /* Fondo amarillo */
+    color: #000000; /* Texto negro */
+    border: 2px solid var(--theme-link-color);
+}
+body.theme-high-contrast .news-card:hover img {
+    opacity: 1 !important; /* Imágenes completamente opacas en alto contraste */
+}
+
+/* Si tus estilos .news-card:hover originales están DESPUÉS de este bloque,
+   podrían anular algunas de estas adaptaciones.
+   Lo ideal es que este bloque de temas esté al principio y
+   luego tus estilos .news-card se apliquen sobre las variables de tema.
+   O, adaptar los estilos .news-card originales para usar variables.
+   Por ahora, los estilos de hover de .news-card que ya tenías seguirán
+   aplicándose en el modo claro, y hemos añadido anulaciones para oscuro y alto contraste.
+*/
+
+/* Puedes dejar tus estilos .news-card originales después de este bloque,
+   pero ten en cuenta que algunas propiedades como background-color y color
+   serán anuladas por las reglas de tema de hover que acabamos de añadir. */
+/* =====================
+   SISTEMA DE TEMAS SIMPLE
+   ===================== */
+
+/* Tema Claro (por defecto) */
+body.theme-light {
+    --bg: #f8f9fa;
+    --text: #212529;
+    --link: #0d6efd;
+    --link-hover: #0a58ca;
+    --card-bg: #fff;
+    --btn-bg: #0d6efd;
+    --btn-text: #fff;
+}
+
+/* Tema Oscuro */
+body.theme-dark {
+    --bg: #181a1b;
+    --text: #f1f1f1;
+    --link: #58a6ff;
+    --link-hover: #80baff;
+    --card-bg: #23272b;
+    --btn-bg: #222b45;
+    --btn-text: #fff;
+}
+
+/* Tema Alto Contraste */
+body.theme-high-contrast {
+    --bg: #000;
+    --text: #fff;
+    --link: #0ff;
+    --link-hover: #ff0;
+    --card-bg: #000;
+    --btn-bg: #ff0;
+    --btn-text: #000;
+}
+
+/* Aplicación de variables a los elementos principales */
+body {
+    background: var(--bg) !important;
+    color: var(--text) !important;
+    transition: background 0.2s, color 0.2s;
+}
+.card, .bg-light, .navbar {
+    background: var(--card-bg) !important;
+    color: var(--text) !important;
+}
+.dropdown-menu {
+    background-color: var(--card-bg) !important;
+    color: var(--text) !important;
+    border: 1px solid var(--link) !important;
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
+}
+a, .nav-link, .dropdown-item {
+    color: var(--link) !important;
+}
+a:hover, .nav-link:hover, .dropdown-item:hover {
+    color: var(--link-hover) !important;
+}
+.btn-primary, .btn-secondary {
+    background: var(--btn-bg) !important;
+    color: var(--btn-text) !important;
+    border: none;
+}
+input, textarea, select {
+    background: var(--card-bg) !important;
+    color: var(--text) !important;
+    border: 1px solid var(--link) !important;
 }
